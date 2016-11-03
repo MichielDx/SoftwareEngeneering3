@@ -1,10 +1,5 @@
 package main.be.kdg.bagageafhandeling.transport.model;
 
-import main.be.kdg.bagageafhandeling.transport.services.ConveyerIdGeneratorImpl;
-import main.be.kdg.bagageafhandeling.transport.services.FlightIdGeneratorImpl;
-import main.be.kdg.bagageafhandeling.transport.services.IdGeneratorService;
-import main.be.kdg.bagageafhandeling.transport.services.SensorIdGeneratorImpl;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
@@ -17,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Bagage {
     private int bagageID;
     private int flightID;
-    private int conveyerID;
+    private int conveyorID;
     private int sensorID;
     private Date timestamp;
     private static final AtomicInteger count = new AtomicInteger(0);
@@ -25,10 +20,10 @@ public class Bagage {
     public Bagage() {
     }
 
-    public Bagage(int flightID, int conveyerID, int sensorID) {
+    public Bagage(int flightID, int conveyorID, int sensorID) {
         this.bagageID = count.incrementAndGet();
         this.flightID = flightID;
-        this.conveyerID = conveyerID;
+        this.conveyorID = conveyorID;
         this.sensorID = sensorID;
         this.timestamp = new Date();
     }
@@ -41,8 +36,8 @@ public class Bagage {
         return flightID;
     }
     @XmlElement
-    public int getConveyerID() {
-        return conveyerID;
+    public int getConveyorID() {
+        return conveyorID;
     }
     @XmlElement
     public int getSensorID() {
