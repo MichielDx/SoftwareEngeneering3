@@ -1,8 +1,11 @@
 package main.be.kdg.bagageafhandeling.transport.model;
 
+import main.be.kdg.bagageafhandeling.transport.exceptions.EndReplayException;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -14,7 +17,7 @@ public class BagageRecordList {
     private List<Bagage> bagages;
 
     public BagageRecordList() {
-        this.bagages = new ArrayList<>();
+        this.bagages = new LinkedList<>();
     }
 
     public List<Bagage> getBagages() {
@@ -23,5 +26,20 @@ public class BagageRecordList {
 
     public void add(Bagage bagage){
         bagages.add(bagage);
+    }
+
+    public Bagage get(int index){
+        if(index>=bagages.size()){
+            return null;
+        }
+        return bagages.get(index);
+    }
+
+    public void pop() throws EndReplayException{
+        try {
+            bagages.remove(0);
+        } catch (IndexOutOfBoundsException e){
+            throw new EndReplayException("All bagages have been read");
+        }
     }
 }

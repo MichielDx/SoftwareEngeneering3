@@ -1,7 +1,7 @@
 package main.be.kdg.bagageafhandeling.transport.engine;
 
-import main.be.kdg.bagageafhandeling.transport.model.Bagage;
-import main.be.kdg.bagageafhandeling.transport.model.TimePeriod;
+import main.be.kdg.bagageafhandeling.transport.exceptions.EndReplayException;
+import main.be.kdg.bagageafhandeling.transport.model.*;
 import main.be.kdg.bagageafhandeling.transport.services.*;
 import org.apache.log4j.Logger;
 
@@ -18,7 +18,11 @@ public class BagageScheduler implements Runnable, Observer {
     private IdGeneratorService sensorIdGen;
     private TimePeriod timePeriod;
     private Bagage bagage;
+    private long frequency;
     private BagageOutput bagageOutput;
+    private BagageInput bagageInput;
+    private SimulatorMode mode;
+    private volatile boolean running = true;
     private Logger logger = Logger.getLogger(BagageScheduler.class);
 
     public BagageScheduler(TimePeriod timePeriod) {
@@ -29,28 +33,64 @@ public class BagageScheduler implements Runnable, Observer {
         bagageOutput = new BagageOutput();
     }
 
-    public BagageScheduler(TimePeriod timePeriod, String recordPath, RecordOption option) {
+    public BagageScheduler(TimePeriod timePeriod, String recordPath, FormatOption option, SimulatorMode mode) {
         flightIdGen = new FlightIdGeneratorImpl();
         conveyerIdGen = new ConveyerIdGeneratorImpl();
         sensorIdGen = new SensorIdGeneratorImpl();
         this.timePeriod = timePeriod;
+        this.mode = mode;
+        if (this.mode == SimulatorMode.GENERATION) {
+            initializeGeneration(recordPath, option);
+        } else {
+            initializeReplay(recordPath, option);
+        }
+    }
 
-        if (option == RecordOption.JSON) bagageOutput = new BagageOutput(recordPath, new BagageJsonService());
-        else bagageOutput = new BagageOutput(recordPath, new BagageXmlService());
+    private void initializeGeneration(String recordPath, FormatOption formatOption) {
+        if (formatOption == FormatOption.JSON)
+            bagageOutput = new BagageOutput(recordPath, new BagageJsonService(), true);
+        else bagageOutput = new BagageOutput(recordPath, new BagageXmlService(), true);
+    }
+
+    private void initializeReplay(String recordPath, FormatOption formatOption) {
+        if (formatOption == FormatOption.JSON) {
+            bagageInput = new BagageInput(recordPath, new BagageJsonService());
+        } else {
+            bagageInput = new BagageInput(recordPath, new BagageXmlService());
+        }
+        bagageOutput = new BagageOutput();
     }
 
     @Override
     public void run() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        while (true) {
-            bagage = new Bagage(flightIdGen.getId(), conveyerIdGen.getId(), sensorIdGen.getId());
-            bagageOutput.publish(bagage);
-            logger.info(String.format("Created bagage with ID %d at %s", bagage.getBagageID(), sdf.format(bagage.getTimestamp())));
+        while (running) {
             try {
-                Thread.sleep(timePeriod.getFrequency());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                setParameters();
+                bagageOutput.publish(bagage);
+                logger.info(String.format("Created bagage with ID %d at %s", bagage.getBagageID(), sdf.format(bagage.getTimestamp())));
+                try {
+                    Thread.sleep(frequency);
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage());
+                }
+            } catch (EndReplayException e) {
+                logger.info(e.getMessage());
+                running = false;
+
             }
+        }
+        System.exit(0);
+    }
+
+    private void setParameters() throws EndReplayException {
+        if (mode == SimulatorMode.GENERATION) {
+            bagage = new Bagage(flightIdGen.getId(), conveyerIdGen.getId(), sensorIdGen.getId());
+            frequency = timePeriod.getFrequency();
+        } else {
+            BagageRecordDTO bagageRecordDTO = bagageInput.getNextBagage();
+            bagage = bagageRecordDTO.getBagage();
+            frequency = bagageRecordDTO.getFrequency();
         }
     }
 

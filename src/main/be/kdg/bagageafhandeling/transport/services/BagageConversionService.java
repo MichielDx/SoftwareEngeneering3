@@ -10,4 +10,5 @@ import java.util.List;
  */
 public interface BagageConversionService {
     String serializeAll(BagageRecordList bagages);
+    BagageRecordList deserializeAll(String string);
 }

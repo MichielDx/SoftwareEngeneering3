@@ -12,11 +12,18 @@ public class BagageJsonService implements BagageConversionService {
     Gson gson;
 
     public BagageJsonService(){
-        gson = new GsonBuilder().setPrettyPrinting().create();
-
+        gson = new Gson();
     }
+
+    @Override
     public String serializeAll (BagageRecordList bagages) {
         return gson.toJson(bagages);
     }
+
+    @Override
+    public BagageRecordList deserializeAll(String string) {
+        return gson.fromJson(string,BagageRecordList.class);
+    }
+
 
 }

@@ -24,13 +24,11 @@ public class DayScheduler extends Observable implements Runnable {
         TimePeriod timePeriod = schedule.getCurrentTimePeriod();
         while (true) {
             long sleep = (timePeriod.getEndHour() * 3600 * 1000) - getCurrentTime();
-            sleep = 10000;
             try {
                 Thread.sleep(sleep);
                 timePeriod = schedule.getCurrentTimePeriod();
                 logger.info("Changed timePeriod to " + timePeriod);
                 setChanged();
-                notifyObservers();
                 if (LocalDateTime.now().getHour() == 0) {
                     notifyObservers();
                 }

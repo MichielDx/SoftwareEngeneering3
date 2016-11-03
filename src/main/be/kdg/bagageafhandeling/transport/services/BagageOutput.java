@@ -26,11 +26,11 @@ public class BagageOutput {
         rabbitSerializer = new BagageXmlService();
     }
 
-    public BagageOutput(String recordPath, BagageConversionService recordSerializer) {
+    public BagageOutput(String recordPath, BagageConversionService recordSerializer, boolean record) {
         rabbitMQ = new RabbitMQ("bagageQueue");
         recorder = new RecordWriter(recordPath);
         bagageRecordList = new BagageRecordList();
-        this.record = true;
+        this.record = record;
         initialize();
         rabbitSerializer = new BagageXmlService();
         this.recordSerializer = recordSerializer;
