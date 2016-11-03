@@ -1,13 +1,11 @@
 package main.be.kdg.bagageafhandeling.transport;
 
-import main.be.kdg.bagageafhandeling.transport.model.Bagage;
 import main.be.kdg.bagageafhandeling.transport.model.FrequencySchedule;
 import main.be.kdg.bagageafhandeling.transport.model.TimePeriod;
-import main.be.kdg.bagageafhandeling.transport.services.BagageScheduler;
-import main.be.kdg.bagageafhandeling.transport.services.DayScheduler;
+import main.be.kdg.bagageafhandeling.transport.engine.BagageScheduler;
+import main.be.kdg.bagageafhandeling.transport.engine.DayScheduler;
 import org.apache.log4j.PropertyConfigurator;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 

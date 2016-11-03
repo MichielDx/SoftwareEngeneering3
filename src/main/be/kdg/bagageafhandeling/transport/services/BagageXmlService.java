@@ -16,7 +16,7 @@ public class BagageXmlService {
     private StringWriter sw;
     private String xmlString;
 
-    public String getXml(Bagage bagage) {
+    public String serialize(Bagage bagage) {
         try {
             jaxbContext = JAXBContext.newInstance(Bagage.class);
             jaxbMarshaller = jaxbContext.createMarshaller();

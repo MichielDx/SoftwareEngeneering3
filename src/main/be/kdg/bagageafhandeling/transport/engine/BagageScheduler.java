@@ -1,13 +1,11 @@
-package main.be.kdg.bagageafhandeling.transport.services;
+package main.be.kdg.bagageafhandeling.transport.engine;
 
 import main.be.kdg.bagageafhandeling.transport.model.Bagage;
-import main.be.kdg.bagageafhandeling.transport.model.FrequencySchedule;
 import main.be.kdg.bagageafhandeling.transport.model.TimePeriod;
+import main.be.kdg.bagageafhandeling.transport.services.*;
 import org.apache.log4j.Logger;
 
-import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -23,11 +21,11 @@ public class BagageScheduler implements Runnable, Observer{
     private BagageOutput bagageOutput;
     private Logger logger = Logger.getLogger(BagageScheduler.class);
 
-    public BagageScheduler(TimePeriod timePeriod) {
+    public BagageScheduler(TimePeriod timePeriod, String recordPath, boolean record) {
         flightIdGen = new FlightIdGeneratorImpl();
         conveyerIdGen = new ConveyerIdGeneratorImpl();
         sensorIdGen = new SensorIdGeneratorImpl();
-        bagageOutput = new BagageOutput();
+        bagageOutput = new BagageOutput(recordPath, record);
         this.timePeriod = timePeriod;
     }
 
@@ -36,7 +34,7 @@ public class BagageScheduler implements Runnable, Observer{
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         while(true) {
             bagage = new Bagage(flightIdGen.getId(), conveyerIdGen.getId(), sensorIdGen.getId());
-            bagageOutput.publishMessage(bagage);
+            bagageOutput.publish(bagage);
             logger.info(String.format("Created bagage with ID %d at %s", bagage.getBagageID(), sdf.format(bagage.getTimestamp())));
             try {
                 Thread.sleep(timePeriod.getFrequency());

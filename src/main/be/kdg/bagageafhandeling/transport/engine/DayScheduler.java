@@ -1,10 +1,9 @@
-package main.be.kdg.bagageafhandeling.transport.services;
+package main.be.kdg.bagageafhandeling.transport.engine;
 
 import main.be.kdg.bagageafhandeling.transport.model.FrequencySchedule;
 import main.be.kdg.bagageafhandeling.transport.model.TimePeriod;
 import org.apache.log4j.Logger;
 
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Observable;
 

@@ -39,7 +39,7 @@ public class RabbitMQ implements MessageOutputService {
             channel.queueDeclare(queueName, false, false, false, null);
 
         } catch (IOException | TimeoutException e) {
-            throw new MessageOutputException("Unable to connect to RabbitMQ");
+            throw new MessageOutputException("Unable to connect to RabbitMQ",e);
         }
     }
 
@@ -49,16 +49,16 @@ public class RabbitMQ implements MessageOutputService {
             channel.close();
             connection.close();
         } catch (Exception e) {
-            throw new MessageOutputException("Unable to close connection to RabbitMQ");
+            throw new MessageOutputException("Unable to close connection to RabbitMQ",e);
         }
     }
 
 
-    public void publish(String message) {
+    public void publish(String message) throws MessageOutputException {
         try {
             channel.basicPublish("", queueName, null, message.getBytes());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new MessageOutputException("Unable to publish message to RabbitMQ",e);
         }
     }
 }
