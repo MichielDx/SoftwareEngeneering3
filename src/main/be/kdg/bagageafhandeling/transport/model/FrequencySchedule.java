@@ -17,12 +17,7 @@ public class FrequencySchedule {
 
     public FrequencySchedule(List<TimePeriod> periods) {
         for (TimePeriod period : periods) {
-            try {
-                period.validatePeriod();
-                addPeriod(period);
-            } catch (TimePeriodException e) {
-                logger.error(e.getMessage());
-            }
+            addPeriod(period);
         }
     }
 

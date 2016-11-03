@@ -4,6 +4,7 @@ import main.be.kdg.bagageafhandeling.transport.model.FrequencySchedule;
 import main.be.kdg.bagageafhandeling.transport.model.TimePeriod;
 import org.apache.log4j.Logger;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Observable;
 
@@ -21,13 +22,18 @@ public class DayScheduler extends Observable implements Runnable {
     @Override
     public void run() {
         TimePeriod timePeriod = schedule.getCurrentTimePeriod();
-        while(true) {
+        while (true) {
             long sleep = (timePeriod.getEndHour() * 3600 * 1000) - getCurrentTime();
+            sleep = 10000;
             try {
                 Thread.sleep(sleep);
                 timePeriod = schedule.getCurrentTimePeriod();
-                logger.info("Changed timePeriod to "+ timePeriod);
+                logger.info("Changed timePeriod to " + timePeriod);
                 setChanged();
+                notifyObservers();
+                if (LocalDateTime.now().getHour() == 0) {
+                    notifyObservers();
+                }
                 notifyObservers(timePeriod);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -35,7 +41,7 @@ public class DayScheduler extends Observable implements Runnable {
         }
     }
 
-    private long getCurrentTime(){
+    private long getCurrentTime() {
         Calendar c = Calendar.getInstance();
         long now = c.getTimeInMillis();
         c.set(Calendar.HOUR_OF_DAY, 0);

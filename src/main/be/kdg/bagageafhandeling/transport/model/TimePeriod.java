@@ -37,12 +37,6 @@ public class TimePeriod implements Comparable<TimePeriod> {
         return frequency;
     }
 
-    public void validatePeriod() throws TimePeriodException {
-        if(beginHour>endHour){
-            throw new TimePeriodException("beginHour must be lower than endHour");
-        }
-    }
-
     @Override
     public int compareTo(TimePeriod o) {
         return this.getBeginHour() - o.getBeginHour();
@@ -50,6 +44,6 @@ public class TimePeriod implements Comparable<TimePeriod> {
 
     @Override
     public String toString() {
-        return beginHour + "-" + endHour + "at a frequency of " + frequency;
+        return beginHour + "-" + endHour + " at a frequency of " + frequency;
     }
 }

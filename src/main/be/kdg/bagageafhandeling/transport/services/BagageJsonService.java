@@ -2,12 +2,8 @@ package main.be.kdg.bagageafhandeling.transport.services;
 
 
 import com.google.gson.Gson;
-import main.be.kdg.bagageafhandeling.transport.model.Bagage;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.google.gson.GsonBuilder;
+import main.be.kdg.bagageafhandeling.transport.model.BagageRecordList;
 
 /**
  * Created by Arthur Haelterman on 3/11/2016.
@@ -16,11 +12,11 @@ public class BagageJsonService implements BagageConversionService {
     Gson gson;
 
     public BagageJsonService(){
-        gson = new Gson();
+        gson = new GsonBuilder().setPrettyPrinting().create();
 
     }
-    public String serialize (Bagage bagage) {
-        return gson.toJson(bagage);
+    public String serializeAll (BagageRecordList bagages) {
+        return gson.toJson(bagages);
     }
 
 }

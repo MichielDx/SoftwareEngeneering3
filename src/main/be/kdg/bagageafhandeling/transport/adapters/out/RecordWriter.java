@@ -39,6 +39,7 @@ public class RecordWriter {
         }
         try {
             bufferedWriter.write(serializedString);
+            bufferedWriter.flush();
 
         } catch (IOException e) {
             throw new RecordWriterException("Unable to write to file", e);

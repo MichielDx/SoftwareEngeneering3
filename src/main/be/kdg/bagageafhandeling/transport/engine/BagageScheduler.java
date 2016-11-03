@@ -12,7 +12,7 @@ import java.util.Observer;
 /**
  * Created by Michiel on 2/11/2016.
  */
-public class BagageScheduler implements Runnable, Observer{
+public class BagageScheduler implements Runnable, Observer {
     private IdGeneratorService flightIdGen;
     private IdGeneratorService conveyerIdGen;
     private IdGeneratorService sensorIdGen;
@@ -35,14 +35,14 @@ public class BagageScheduler implements Runnable, Observer{
         sensorIdGen = new SensorIdGeneratorImpl();
         this.timePeriod = timePeriod;
 
-        if (option == RecordOption.JSON) bagageOutput = new BagageOutput(recordPath,new BagageJsonService());
-        else bagageOutput = new BagageOutput(recordPath,new BagageXmlService());
+        if (option == RecordOption.JSON) bagageOutput = new BagageOutput(recordPath, new BagageJsonService());
+        else bagageOutput = new BagageOutput(recordPath, new BagageXmlService());
     }
 
     @Override
     public void run() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        while(true) {
+        while (true) {
             bagage = new Bagage(flightIdGen.getId(), conveyerIdGen.getId(), sensorIdGen.getId());
             bagageOutput.publish(bagage);
             logger.info(String.format("Created bagage with ID %d at %s", bagage.getBagageID(), sdf.format(bagage.getTimestamp())));
@@ -56,6 +56,10 @@ public class BagageScheduler implements Runnable, Observer{
 
     @Override
     public void update(Observable o, Object arg) {
-        this.timePeriod = ((TimePeriod)arg);
+        if (arg == null) {
+            bagageOutput.write();
+        } else {
+            this.timePeriod = ((TimePeriod) arg);
+        }
     }
 }

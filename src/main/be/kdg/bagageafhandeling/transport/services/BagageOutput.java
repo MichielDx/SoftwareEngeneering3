@@ -5,6 +5,7 @@ import main.be.kdg.bagageafhandeling.transport.adapters.out.RecordWriter;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageOutputException;
 import main.be.kdg.bagageafhandeling.transport.exceptions.RecordWriterException;
 import main.be.kdg.bagageafhandeling.transport.model.Bagage;
+import main.be.kdg.bagageafhandeling.transport.model.BagageRecordList;
 import org.apache.log4j.Logger;
 
 /**
@@ -16,6 +17,7 @@ public class BagageOutput {
     private RecordWriter recorder;
     private BagageXmlService rabbitSerializer;
     private BagageConversionService recordSerializer;
+    private BagageRecordList bagageRecordList;
     private Logger logger = Logger.getLogger(BagageOutput.class);
 
     public BagageOutput() {
@@ -27,6 +29,7 @@ public class BagageOutput {
     public BagageOutput(String recordPath, BagageConversionService recordSerializer) {
         rabbitMQ = new RabbitMQ("bagageQueue");
         recorder = new RecordWriter(recordPath);
+        bagageRecordList = new BagageRecordList();
         this.record = true;
         initialize();
         rabbitSerializer = new BagageXmlService();
@@ -49,13 +52,20 @@ public class BagageOutput {
         try {
             rabbitMQ.publish(rabbitSerializer.serialize(bagage));
             if (this.record) {
-                recorder.write(recordSerializer.serialize(bagage));
+                bagageRecordList.add(bagage);
             }
-        } catch (MessageOutputException | RecordWriterException e) {
+        } catch (MessageOutputException e) {
             logger.error(e.getMessage());
             logger.error(e.getCause().getMessage());
         }
-
     }
 
+    public void write() {
+        try {
+            recorder.write(recordSerializer.serializeAll(bagageRecordList));
+        } catch (RecordWriterException e) {
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
+        }
+    }
 }
