@@ -1,15 +1,19 @@
 package main.be.kdg.bagageafhandeling.transport.adapters.in;
 
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.*;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageOutputException;
+import main.be.kdg.bagageafhandeling.transport.model.BagageRecordList;
+import main.be.kdg.bagageafhandeling.transport.model.DTO.BagageMessageDTO;
 import main.be.kdg.bagageafhandeling.transport.services.MessageInputService;
 import main.be.kdg.bagageafhandeling.transport.services.MessageOutputService;
 import org.apache.log4j.Logger;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.TimeoutException;
@@ -17,9 +21,10 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by Michiel on 2/11/2016.
  */
-public class RabbitMQ implements MessageInputService {
+public class RabbitMQ extends Observable implements MessageInputService {
     private final String queueName;
-
+    JAXBContext jaxbContext;
+    Unmarshaller jaxbUnmarshaller;
     private Connection connection;
     private Channel channel;
 
@@ -30,7 +35,7 @@ public class RabbitMQ implements MessageInputService {
     }
 
     @Override
-    public void initialize() throws MessageInputException{
+    public void initialize() throws MessageInputException {
         try {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setUsername("guest");
@@ -41,26 +46,54 @@ public class RabbitMQ implements MessageInputService {
             channel.queueDeclare(queueName, false, false, false, null);
 
         } catch (IOException | TimeoutException e) {
-            throw new MessageInputException("Unable to connect to RabbitMQ",e);
+            throw new MessageInputException("Unable to connect to RabbitMQ", e);
         }
     }
 
     @Override
-    public void shutdown() throws MessageInputException{
+    public void shutdown() throws MessageInputException {
         try {
             channel.close();
             connection.close();
         } catch (Exception e) {
-            throw new MessageInputException("Unable to close connection to RabbitMQ",e);
+            throw new MessageInputException("Unable to close connection to RabbitMQ", e);
         }
     }
 
 
-    public void publish(String message) throws MessageInputException {
+    public void addObserver(Observer o){
+        super.addObserver(o);
+    }
+
+    public void retrieve() throws MessageInputException {
         try {
-            channel.basicPublish("", queueName, null, message.getBytes());
+            Consumer consumer = new DefaultConsumer(channel) {
+                @Override
+                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
+                        throws IOException {
+                    logger.info("Received message from RabbitMQ queue " + queueName);
+                    String message = new String(body, "UTF-8");
+                    logger.debug("Message content: " + message);
+                    try {
+                        jaxbContext = JAXBContext.newInstance(BagageMessageDTO.class);
+                        jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+                        Reader reader = new StringReader(message);
+                        BagageMessageDTO messageDTO = null;
+                        messageDTO = (BagageMessageDTO) jaxbUnmarshaller.unmarshal(reader);
+                        setChanged();
+                        notifyObservers(messageDTO);
+                    } catch (Exception e) {
+                        throw new IOException("Error during conversion to DTO", e);
+                    }
+                }
+            };
+            channel.basicConsume(queueName, true, consumer);
         } catch (IOException e) {
-            throw new MessageInputException("Unable to publish message to RabbitMQ",e);
+            throw new MessageInputException("Unable to retrieve message from RabbitMQ", e);
         }
+
     }
+
 }
+
+

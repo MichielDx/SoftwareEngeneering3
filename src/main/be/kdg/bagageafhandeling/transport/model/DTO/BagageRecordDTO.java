@@ -1,4 +1,6 @@
-package main.be.kdg.bagageafhandeling.transport.model;
+package main.be.kdg.bagageafhandeling.transport.model.DTO;
+
+import main.be.kdg.bagageafhandeling.transport.model.Bagage;
 
 /**
  * Created by Michiel on 3/11/2016.

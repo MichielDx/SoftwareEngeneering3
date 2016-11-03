@@ -2,6 +2,9 @@ package main.be.kdg.bagageafhandeling.transport.engine;
 
 import main.be.kdg.bagageafhandeling.transport.exceptions.EndReplayException;
 import main.be.kdg.bagageafhandeling.transport.model.*;
+import main.be.kdg.bagageafhandeling.transport.model.DTO.BagageRecordDTO;
+import main.be.kdg.bagageafhandeling.transport.model.Enum.FormatOption;
+import main.be.kdg.bagageafhandeling.transport.model.Enum.SimulatorMode;
 import main.be.kdg.bagageafhandeling.transport.services.*;
 import org.apache.log4j.Logger;
 

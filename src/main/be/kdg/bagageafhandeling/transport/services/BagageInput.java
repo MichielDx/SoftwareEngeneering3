@@ -1,11 +1,12 @@
 package main.be.kdg.bagageafhandeling.transport.services;
 
+import main.be.kdg.bagageafhandeling.transport.adapters.in.RabbitMQ;
 import main.be.kdg.bagageafhandeling.transport.adapters.in.RecordReader;
 import main.be.kdg.bagageafhandeling.transport.exceptions.EndReplayException;
+import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
 import main.be.kdg.bagageafhandeling.transport.exceptions.RecordReaderException;
-import main.be.kdg.bagageafhandeling.transport.exceptions.RecordWriterException;
 import main.be.kdg.bagageafhandeling.transport.model.Bagage;
-import main.be.kdg.bagageafhandeling.transport.model.BagageRecordDTO;
+import main.be.kdg.bagageafhandeling.transport.model.DTO.BagageRecordDTO;
 import main.be.kdg.bagageafhandeling.transport.model.BagageRecordList;
 import org.apache.log4j.Logger;
 
@@ -18,6 +19,7 @@ public class BagageInput {
     private BagageRecordList bagageRecordList;
     private String result;
     private Logger logger = Logger.getLogger(BagageInput.class);
+    private MessageInputService rabbitMQ;
 
     public BagageInput(String path, BagageConversionService bagageConversionService) {
         recordReader = new RecordReader(path);
@@ -51,4 +53,6 @@ public class BagageInput {
         bagageRecordList.pop();
         return new BagageRecordDTO(bagage,frequency);
     }
+
+
 }

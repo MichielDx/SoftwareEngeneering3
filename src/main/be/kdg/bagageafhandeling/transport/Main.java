@@ -1,10 +1,11 @@
 package main.be.kdg.bagageafhandeling.transport;
 
+import main.be.kdg.bagageafhandeling.transport.engine.RouteScheduler;
 import main.be.kdg.bagageafhandeling.transport.model.FrequencySchedule;
-import main.be.kdg.bagageafhandeling.transport.model.SimulatorMode;
+import main.be.kdg.bagageafhandeling.transport.model.Enum.SimulatorMode;
 import main.be.kdg.bagageafhandeling.transport.model.TimePeriod;
 import main.be.kdg.bagageafhandeling.transport.engine.BagageScheduler;
-import main.be.kdg.bagageafhandeling.transport.model.FormatOption;
+import main.be.kdg.bagageafhandeling.transport.model.Enum.FormatOption;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.util.ArrayList;
@@ -21,12 +22,15 @@ public class Main {
 
         //DayScheduler dayScheduler = new DayScheduler(f);
         BagageScheduler bagageScheduler = new BagageScheduler(f.getCurrentTimePeriod(), "C:\\Users\\Michiel\\Desktop\\test.json", FormatOption.JSON, SimulatorMode.REPLAY);
+        RouteScheduler routeScheduler = new RouteScheduler();
         //dayScheduler.addObserver(bagageScheduler);
 
         //Thread day = new Thread(dayScheduler);
         Thread bagage = new Thread(bagageScheduler);
+        Thread route = new Thread(routeScheduler);
         //day.start();
-        bagage.start();
+        //bagage.start();
+        route.start();
     }
 
     private static FrequencySchedule getFrequencySchedule(){

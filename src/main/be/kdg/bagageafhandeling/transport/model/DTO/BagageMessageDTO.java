@@ -1,4 +1,4 @@
-package main.be.kdg.bagageafhandeling.transport.model;
+package main.be.kdg.bagageafhandeling.transport.model.DTO;
 
 /**
  * Created by Michiel on 3/11/2016.
@@ -18,6 +18,11 @@ public class BagageMessageDTO {
 
     public int getConveyorID() {
         return ConveyorID;
+    }
+
+    @Override
+    public String toString() {
+        return "BagageId: " + BagageID + " | " + "ConveyorID " + ConveyorID;
     }
 }
 
