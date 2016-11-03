@@ -21,12 +21,22 @@ public class BagageScheduler implements Runnable, Observer{
     private BagageOutput bagageOutput;
     private Logger logger = Logger.getLogger(BagageScheduler.class);
 
-    public BagageScheduler(TimePeriod timePeriod, String recordPath, boolean record) {
+    public BagageScheduler(TimePeriod timePeriod) {
         flightIdGen = new FlightIdGeneratorImpl();
         conveyerIdGen = new ConveyerIdGeneratorImpl();
         sensorIdGen = new SensorIdGeneratorImpl();
-        bagageOutput = new BagageOutput(recordPath, record);
         this.timePeriod = timePeriod;
+        bagageOutput = new BagageOutput();
+    }
+
+    public BagageScheduler(TimePeriod timePeriod, String recordPath, RecordOption option) {
+        flightIdGen = new FlightIdGeneratorImpl();
+        conveyerIdGen = new ConveyerIdGeneratorImpl();
+        sensorIdGen = new SensorIdGeneratorImpl();
+        this.timePeriod = timePeriod;
+
+        if (option == RecordOption.JSON) bagageOutput = new BagageOutput(recordPath,new BagageJsonService());
+        else bagageOutput = new BagageOutput(recordPath,new BagageXmlService());
     }
 
     @Override

@@ -13,15 +13,14 @@ import java.io.IOException;
  */
 public class RecordWriter {
     private File file;
-    BufferedWriter bufferedWriter;
-    FileWriter fileWriter;
+    private BufferedWriter bufferedWriter;
+    private FileWriter fileWriter;
 
     public RecordWriter(String path) {
         file = new File(path);
     }
 
     public void initialize() throws RecordWriterException {
-        FileWriter fileWriter = null;
         try {
             fileWriter = new FileWriter(file);
         } catch (IOException e) {
@@ -31,9 +30,7 @@ public class RecordWriter {
     }
 
     public void write(String serializedString) throws RecordWriterException {
-
         try {
-
             if (!file.exists()) {
                 file.createNewFile();
             }

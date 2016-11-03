@@ -10,7 +10,7 @@ import java.io.StringWriter;
 /**
  * Created by Michiel on 2/11/2016.
  */
-public class BagageXmlService {
+public class BagageXmlService implements BagageConversionService {
     private JAXBContext jaxbContext;
     private Marshaller jaxbMarshaller;
     private StringWriter sw;
