@@ -3,9 +3,8 @@ package main.be.kdg.bagageafhandeling.transport.adapters.in;
 import be.kdg.se3.proxy.ConveyorServiceProxy;
 import com.google.gson.Gson;
 import main.be.kdg.bagageafhandeling.transport.exceptions.APIException;
-import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
-import main.be.kdg.bagageafhandeling.transport.model.Conveyor;
-import main.be.kdg.bagageafhandeling.transport.services.ConveyorService;
+import main.be.kdg.bagageafhandeling.transport.model.Conveyor.Conveyor;
+import main.be.kdg.bagageafhandeling.transport.services.Interface.ConveyorService;
 import retrofit2.Retrofit;
 import retrofit2.http.Path;
 

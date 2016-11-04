@@ -2,10 +2,18 @@ package main.be.kdg.bagageafhandeling.transport.engine;
 
 import main.be.kdg.bagageafhandeling.transport.exceptions.EndReplayException;
 import main.be.kdg.bagageafhandeling.transport.model.*;
+import main.be.kdg.bagageafhandeling.transport.model.Bagage.Bagage;
 import main.be.kdg.bagageafhandeling.transport.model.DTO.BagageRecordDTO;
 import main.be.kdg.bagageafhandeling.transport.model.Enum.FormatOption;
 import main.be.kdg.bagageafhandeling.transport.model.Enum.SimulatorMode;
-import main.be.kdg.bagageafhandeling.transport.services.*;
+import main.be.kdg.bagageafhandeling.transport.services.Bagage.BagageInput;
+import main.be.kdg.bagageafhandeling.transport.services.Bagage.BagageJsonService;
+import main.be.kdg.bagageafhandeling.transport.services.Bagage.BagageOutput;
+import main.be.kdg.bagageafhandeling.transport.services.Bagage.BagageXmlService;
+import main.be.kdg.bagageafhandeling.transport.services.Gen.ConveyerIdGeneratorImpl;
+import main.be.kdg.bagageafhandeling.transport.services.Gen.FlightIdGeneratorImpl;
+import main.be.kdg.bagageafhandeling.transport.services.Gen.SensorIdGeneratorImpl;
+import main.be.kdg.bagageafhandeling.transport.services.Interface.IdGeneratorService;
 import org.apache.log4j.Logger;
 
 import java.text.SimpleDateFormat;

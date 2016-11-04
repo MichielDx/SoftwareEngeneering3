@@ -4,12 +4,10 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageOutputException;
-import main.be.kdg.bagageafhandeling.transport.services.MessageOutputService;
+import main.be.kdg.bagageafhandeling.transport.services.Interface.MessageOutputService;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -41,6 +39,7 @@ public class RabbitMQ implements MessageOutputService {
         } catch (IOException | TimeoutException e) {
             throw new MessageOutputException("Unable to connect to RabbitMQ",e);
         }
+        logger.info("Succesfully connected to RabbitMQ queue: " + queueName);
     }
 
     @Override
@@ -57,6 +56,7 @@ public class RabbitMQ implements MessageOutputService {
     public void publish(String message) throws MessageOutputException {
         try {
             channel.basicPublish("", queueName, null, message.getBytes());
+            logger.info("Succesfully published message to RabbitMQ queue: " + queueName);
         } catch (IOException e) {
             throw new MessageOutputException("Unable to publish message to RabbitMQ",e);
         }
