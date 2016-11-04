@@ -2,11 +2,8 @@ package main.be.kdg.bagageafhandeling.transport.adapters.in;
 
 import com.rabbitmq.client.*;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
-import main.be.kdg.bagageafhandeling.transport.exceptions.MessageOutputException;
-import main.be.kdg.bagageafhandeling.transport.model.BagageRecordList;
 import main.be.kdg.bagageafhandeling.transport.model.DTO.BagageMessageDTO;
-import main.be.kdg.bagageafhandeling.transport.services.MessageInputService;
-import main.be.kdg.bagageafhandeling.transport.services.MessageOutputService;
+import main.be.kdg.bagageafhandeling.transport.services.Interface.MessageInputService;
 import org.apache.log4j.Logger;
 
 import javax.xml.bind.JAXBContext;
@@ -48,6 +45,7 @@ public class RabbitMQ extends Observable implements MessageInputService {
         } catch (IOException | TimeoutException e) {
             throw new MessageInputException("Unable to connect to RabbitMQ", e);
         }
+        logger.info("Succesfully connected to RabbitMQ queue: " + queueName);
     }
 
     @Override
@@ -83,7 +81,7 @@ public class RabbitMQ extends Observable implements MessageInputService {
                         setChanged();
                         notifyObservers(messageDTO);
                     } catch (Exception e) {
-                        throw new IOException("Error during conversion to DTO", e);
+                        throw new IOException("Error during conversion from RabbitMQ message to BagageMessageDTO", e);
                     }
                 }
             };

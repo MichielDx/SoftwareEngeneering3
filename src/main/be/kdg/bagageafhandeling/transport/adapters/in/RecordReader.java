@@ -1,6 +1,6 @@
 package main.be.kdg.bagageafhandeling.transport.adapters.in;
-
 import main.be.kdg.bagageafhandeling.transport.exceptions.RecordReaderException;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 
@@ -11,6 +11,7 @@ public class RecordReader {
     private File file;
     private BufferedReader bufferedReader;
     private FileReader fileReader;
+    private Logger logger = Logger.getLogger(RecordReader.class);
 
     public RecordReader(String path) {
         file = new File(path);
@@ -27,6 +28,7 @@ public class RecordReader {
     }
 
     public String Read() throws RecordReaderException {
+        logger.info("Attempting to read file: " + file.getAbsolutePath());
         StringBuilder str = new StringBuilder();
         String line = "";
         if (!file.exists()) {
@@ -48,6 +50,7 @@ public class RecordReader {
                 throw new RecordReaderException("Unable to close reader", ex);
             }
         }
+        logger.info("Succesfully read file: " + file.getAbsolutePath());
         return str.toString();
     }
 }

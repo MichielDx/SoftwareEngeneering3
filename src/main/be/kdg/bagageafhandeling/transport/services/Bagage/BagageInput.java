@@ -1,13 +1,13 @@
-package main.be.kdg.bagageafhandeling.transport.services;
+package main.be.kdg.bagageafhandeling.transport.services.Bagage;
 
-import main.be.kdg.bagageafhandeling.transport.adapters.in.RabbitMQ;
 import main.be.kdg.bagageafhandeling.transport.adapters.in.RecordReader;
 import main.be.kdg.bagageafhandeling.transport.exceptions.EndReplayException;
-import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
 import main.be.kdg.bagageafhandeling.transport.exceptions.RecordReaderException;
-import main.be.kdg.bagageafhandeling.transport.model.Bagage;
+import main.be.kdg.bagageafhandeling.transport.model.Bagage.Bagage;
 import main.be.kdg.bagageafhandeling.transport.model.DTO.BagageRecordDTO;
-import main.be.kdg.bagageafhandeling.transport.model.BagageRecordList;
+import main.be.kdg.bagageafhandeling.transport.model.Bagage.BagageRecordList;
+import main.be.kdg.bagageafhandeling.transport.services.Interface.BagageConversionService;
+import main.be.kdg.bagageafhandeling.transport.services.Interface.MessageInputService;
 import org.apache.log4j.Logger;
 
 /**

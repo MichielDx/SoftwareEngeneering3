@@ -1,4 +1,4 @@
-package main.be.kdg.bagageafhandeling.transport.model;
+package main.be.kdg.bagageafhandeling.transport.model.Conveyor;
 
 import java.util.List;
 

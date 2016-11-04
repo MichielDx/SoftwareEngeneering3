@@ -1,4 +1,4 @@
-package main.be.kdg.bagageafhandeling.transport.services;
+package main.be.kdg.bagageafhandeling.transport.services.Interface;
 
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
 import main.be.kdg.bagageafhandeling.transport.model.DTO.BagageMessageDTO;

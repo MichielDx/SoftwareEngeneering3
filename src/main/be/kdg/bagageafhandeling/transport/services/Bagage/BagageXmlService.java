@@ -1,16 +1,15 @@
-package main.be.kdg.bagageafhandeling.transport.services;
+package main.be.kdg.bagageafhandeling.transport.services.Bagage;
 
-import main.be.kdg.bagageafhandeling.transport.model.Bagage;
-import main.be.kdg.bagageafhandeling.transport.model.BagageRecordList;
+import main.be.kdg.bagageafhandeling.transport.model.Bagage.Bagage;
+import main.be.kdg.bagageafhandeling.transport.model.Bagage.BagageRecordList;
+import main.be.kdg.bagageafhandeling.transport.services.Interface.BagageConversionService;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.List;
 
 /**
  * Created by Michiel on 2/11/2016.

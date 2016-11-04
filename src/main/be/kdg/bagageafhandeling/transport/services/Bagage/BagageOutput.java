@@ -1,11 +1,12 @@
-package main.be.kdg.bagageafhandeling.transport.services;
+package main.be.kdg.bagageafhandeling.transport.services.Bagage;
 
 import main.be.kdg.bagageafhandeling.transport.adapters.out.RabbitMQ;
 import main.be.kdg.bagageafhandeling.transport.adapters.out.RecordWriter;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageOutputException;
 import main.be.kdg.bagageafhandeling.transport.exceptions.RecordWriterException;
-import main.be.kdg.bagageafhandeling.transport.model.Bagage;
-import main.be.kdg.bagageafhandeling.transport.model.BagageRecordList;
+import main.be.kdg.bagageafhandeling.transport.model.Bagage.Bagage;
+import main.be.kdg.bagageafhandeling.transport.model.Bagage.BagageRecordList;
+import main.be.kdg.bagageafhandeling.transport.services.Interface.BagageConversionService;
 import org.apache.log4j.Logger;
 
 /**

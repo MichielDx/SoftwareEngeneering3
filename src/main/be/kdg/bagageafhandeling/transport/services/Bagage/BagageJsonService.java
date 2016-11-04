@@ -1,9 +1,9 @@
-package main.be.kdg.bagageafhandeling.transport.services;
+package main.be.kdg.bagageafhandeling.transport.services.Bagage;
 
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import main.be.kdg.bagageafhandeling.transport.model.BagageRecordList;
+import main.be.kdg.bagageafhandeling.transport.model.Bagage.BagageRecordList;
+import main.be.kdg.bagageafhandeling.transport.services.Interface.BagageConversionService;
 
 /**
  * Created by Arthur Haelterman on 3/11/2016.

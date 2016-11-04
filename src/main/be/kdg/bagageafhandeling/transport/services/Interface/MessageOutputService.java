@@ -1,4 +1,4 @@
-package main.be.kdg.bagageafhandeling.transport.services;
+package main.be.kdg.bagageafhandeling.transport.services.Interface;
 
 /**
  * Created by Michiel on 2/11/2016.

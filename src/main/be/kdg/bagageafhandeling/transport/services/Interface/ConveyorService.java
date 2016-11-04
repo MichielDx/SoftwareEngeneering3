@@ -1,10 +1,8 @@
-package main.be.kdg.bagageafhandeling.transport.services;
+package main.be.kdg.bagageafhandeling.transport.services.Interface;
 
-import main.be.kdg.bagageafhandeling.transport.model.Conveyor;
+import main.be.kdg.bagageafhandeling.transport.model.Conveyor.Conveyor;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
-
-import java.util.List;
 
 /**
  * Created by Michiel on 4/11/2016.

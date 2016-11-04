@@ -1,6 +1,6 @@
-package main.be.kdg.bagageafhandeling.transport.services;
+package main.be.kdg.bagageafhandeling.transport.services.Gen;
 
-import main.be.kdg.bagageafhandeling.transport.services.IdGeneratorService;
+import main.be.kdg.bagageafhandeling.transport.services.Interface.IdGeneratorService;
 
 import java.util.Random;
 

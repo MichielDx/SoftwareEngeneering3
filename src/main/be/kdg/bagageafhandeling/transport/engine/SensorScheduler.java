@@ -1,10 +1,10 @@
 package main.be.kdg.bagageafhandeling.transport.engine;
 
-import main.be.kdg.bagageafhandeling.transport.model.Conveyor;
+import main.be.kdg.bagageafhandeling.transport.model.Conveyor.Conveyor;
 import main.be.kdg.bagageafhandeling.transport.model.DTO.BagageMessageDTO;
 import main.be.kdg.bagageafhandeling.transport.model.Enum.DelayMethod;
-import main.be.kdg.bagageafhandeling.transport.services.RouteInput;
-import main.be.kdg.bagageafhandeling.transport.services.RouteOutput;
+import main.be.kdg.bagageafhandeling.transport.services.Route.RouteInput;
+import main.be.kdg.bagageafhandeling.transport.services.Route.RouteOutput;
 import org.apache.log4j.Logger;
 
 import java.util.LinkedList;

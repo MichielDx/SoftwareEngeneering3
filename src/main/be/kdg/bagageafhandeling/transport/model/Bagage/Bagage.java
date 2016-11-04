@@ -1,4 +1,4 @@
-package main.be.kdg.bagageafhandeling.transport.model;
+package main.be.kdg.bagageafhandeling.transport.model.Bagage;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

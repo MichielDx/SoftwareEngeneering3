@@ -1,10 +1,9 @@
-package main.be.kdg.bagageafhandeling.transport.model;
+package main.be.kdg.bagageafhandeling.transport.model.Bagage;
 
 import main.be.kdg.bagageafhandeling.transport.exceptions.EndReplayException;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

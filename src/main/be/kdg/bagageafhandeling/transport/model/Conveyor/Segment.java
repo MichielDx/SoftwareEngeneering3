@@ -1,4 +1,4 @@
-package main.be.kdg.bagageafhandeling.transport.model;
+package main.be.kdg.bagageafhandeling.transport.model.Conveyor;
 
 /**
  * Created by Michiel on 4/11/2016.

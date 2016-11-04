@@ -3,7 +3,7 @@ package main.be.kdg.bagageafhandeling.transport.engine;
 
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
 import main.be.kdg.bagageafhandeling.transport.model.DTO.BagageMessageDTO;
-import main.be.kdg.bagageafhandeling.transport.services.RouteInput;
+import main.be.kdg.bagageafhandeling.transport.services.Route.RouteInput;
 import org.apache.log4j.Logger;
 
 import java.util.Observable;
