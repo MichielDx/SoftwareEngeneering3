@@ -58,7 +58,7 @@ public class RabbitMQ implements MessageOutputService {
             channel.basicPublish("", queueName, null, message.getBytes());
             logger.info("Succesfully published message to RabbitMQ queue: " + queueName);
         } catch (IOException e) {
-            throw new MessageOutputException("Unable to publish message to RabbitMQ",e);
+            throw new MessageOutputException("Unable to publish message to RabbitMQ queue: " + queueName,e);
         }
     }
 }

@@ -1,5 +1,6 @@
 package main.be.kdg.bagageafhandeling.transport;
 
+import main.be.kdg.bagageafhandeling.transport.Controller.Controller;
 import main.be.kdg.bagageafhandeling.transport.engine.RouteScheduler;
 import main.be.kdg.bagageafhandeling.transport.model.Enum.DelayMethod;
 import main.be.kdg.bagageafhandeling.transport.model.FrequencySchedule;
@@ -16,30 +17,13 @@ import java.util.ArrayList;
  */
 public class Main {
     public static void main(String[] args) {
-        String log4jConfPath = "C:\\Users\\Michiel\\SoftwareEngineering3\\src\\main\\log4j.properties";
-        PropertyConfigurator.configure(log4jConfPath);
-
-        FrequencySchedule f = getFrequencySchedule();
-
-        //DayScheduler dayScheduler = new DayScheduler(f);
-        BagageScheduler bagageScheduler = new BagageScheduler(f.getCurrentTimePeriod(), "C:\\Users\\Michiel\\Desktop\\test.json", FormatOption.JSON, SimulatorMode.REPLAY);
-        RouteScheduler routeScheduler = new RouteScheduler(DelayMethod.CALCULATED,2000);
-        //dayScheduler.addObserver(bagageScheduler);
-
-        //Thread day = new Thread(dayScheduler);
-        Thread bagage = new Thread(bagageScheduler);
-        //day.start();
-        //bagage.start();
+        Controller controller = new Controller();
+        controller.setMode(SimulatorMode.GENERATION);
+        controller.setOption(FormatOption.JSON);
+        controller.setRecordPath("C:\\Users\\Michiel\\Desktop\\test.json");
+        controller.setMethod(DelayMethod.CALCULATED);
+        controller.initialize();
+        controller.start();
     }
 
-    private static FrequencySchedule getFrequencySchedule(){
-        ArrayList<TimePeriod> periods = new ArrayList<>();
-        periods.add(new TimePeriod(0, 2, 5000));
-        periods.add(new TimePeriod(2, 6, 10000));
-        periods.add(new TimePeriod(6, 12, 3000));
-        periods.add(new TimePeriod(12, 16, 2000));
-        periods.add(new TimePeriod(16, 20, 1000));
-        periods.add(new TimePeriod(20, 24, 4000));
-        return new FrequencySchedule(periods);
-    }
 }

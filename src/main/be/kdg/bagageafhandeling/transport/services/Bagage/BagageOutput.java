@@ -19,6 +19,7 @@ public class BagageOutput {
     private BagageXmlService rabbitSerializer;
     private BagageConversionService recordSerializer;
     private BagageRecordList bagageRecordList;
+    private BagageRepository bagageRepository;
     private Logger logger = Logger.getLogger(BagageOutput.class);
 
     public BagageOutput() {
@@ -30,11 +31,13 @@ public class BagageOutput {
     public BagageOutput(String recordPath, BagageConversionService recordSerializer, boolean record) {
         rabbitMQ = new RabbitMQ("bagageOutputQueue");
         recorder = new RecordWriter(recordPath);
+        bagageRepository = new BagageRepository();
         bagageRecordList = new BagageRecordList();
         this.record = record;
         initialize();
         rabbitSerializer = new BagageXmlService();
         this.recordSerializer = recordSerializer;
+
     }
 
     private void initialize() {
@@ -52,6 +55,7 @@ public class BagageOutput {
     public void publish(Bagage bagage) {
         try {
             rabbitMQ.publish(rabbitSerializer.serialize(bagage));
+            bagageRepository.addBagage(bagage);
             if (this.record) {
                 bagageRecordList.add(bagage);
             }

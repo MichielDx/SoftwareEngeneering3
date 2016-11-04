@@ -1,5 +1,7 @@
 package main.be.kdg.bagageafhandeling.transport.engine;
 
+import main.be.kdg.bagageafhandeling.transport.model.Bagage.Bagage;
+import main.be.kdg.bagageafhandeling.transport.services.Bagage.BagageRepository;
 import main.be.kdg.bagageafhandeling.transport.adapters.in.ConveyorServiceAPI;
 import main.be.kdg.bagageafhandeling.transport.exceptions.APIException;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
@@ -9,6 +11,7 @@ import main.be.kdg.bagageafhandeling.transport.model.Conveyor.Segment;
 import main.be.kdg.bagageafhandeling.transport.model.DTO.BagageMessageDTO;
 import main.be.kdg.bagageafhandeling.transport.model.Enum.DelayMethod;
 import main.be.kdg.bagageafhandeling.transport.model.SensorMessage;
+import main.be.kdg.bagageafhandeling.transport.services.Route.ConveyorRepository;
 import main.be.kdg.bagageafhandeling.transport.services.Route.RouteInput;
 import main.be.kdg.bagageafhandeling.transport.services.Route.RouteOutput;
 import org.apache.log4j.Logger;
@@ -19,23 +22,26 @@ import java.util.*;
  * Created by Michiel on 4/11/2016.
  */
 public class RouteScheduler implements Observer {
-    private List<BagageMessageDTO> bagageMessageDTOs = new LinkedList<>();
+
     private RouteOutput routeOutput;
     private RouteInput routeInput;
     private DelayMethod delayMethod;
     private BagageMessageDTO result;
-    private Conveyor conveyor;
     private long delay;
+    private Map<Integer,Integer> securityList;
     private Logger logger = Logger.getLogger(RouteScheduler.class);
+    private ConveyorRepository conveyorRepository;
 
-    public RouteScheduler(DelayMethod delayMethod, long delay) {
+    public RouteScheduler(DelayMethod delayMethod, long delay, Map<Integer,Integer> securityList) {
         this.delayMethod = delayMethod;
+        this.securityList = securityList;
         this.delay = delay;
         initialize();
     }
 
     private void initialize() {
         this.routeInput = new RouteInput();
+        conveyorRepository = new ConveyorRepository();
         routeInput.initializeAPI(new ConveyorServiceAPI());
         try {
             routeInput.initializeRabbitMQ(this);
@@ -45,54 +51,100 @@ public class RouteScheduler implements Observer {
         this.routeOutput = new RouteOutput();
     }
 
-    private void doTask() {
-        for (BagageMessageDTO bagageMessageDTO : bagageMessageDTOs) {
-            try {
-                conveyor = routeInput.getConveyor(bagageMessageDTO.getConveyorID());
-                logger.info("Succesfully received conveyor with ID " + conveyor.getConveyorID() + " from proxy");
+    private void doTask(BagageMessageDTO bagageMessageDTO) {
+        if(securityList.containsKey(bagageMessageDTO.getBagageID()) && securityList.containsValue(bagageMessageDTO.getConveyorID())){
+            return;
+        }
+        Bagage bagage = BagageRepository.getBagage(bagageMessageDTO.getBagageID());
+        long timedifference = System.currentTimeMillis() - bagage.getTimestamp().getTime();
+        Conveyor originConveyor = null;
+        Conveyor destinationConveyor = null;
+        Conveyor currentConveyor = null;
+        try {
+            if(conveyorRepository.contains(bagageMessageDTO.getConveyorID())){
+                destinationConveyor = conveyorRepository.getConveyor(bagageMessageDTO.getConveyorID());
+            }else {
+                destinationConveyor = routeInput.getConveyor(bagageMessageDTO.getConveyorID());
+                logger.info("Succesfully received conveyor with ID " + destinationConveyor.getConveyorID() + " from proxy");
+            }
 
-            } catch (APIException e) {
-                conveyor = null;
-                logger.error(e.getMessage());
-                logger.error(e.getCause().getMessage());
+            if(conveyorRepository.contains(bagage.getSensorID())){
+                originConveyor = conveyorRepository.getConveyor(bagage.getSensorID());
+            }else {
+                originConveyor = routeInput.getConveyor(bagage.getSensorID());
+                logger.info("Succesfully received conveyor with ID " + originConveyor.getConveyorID() + " from proxy");
             }
-            if (conveyor == null) delayMethod = DelayMethod.FIXED;
-            if (delayMethod == DelayMethod.FIXED) {
-                try {
-                    Thread.sleep(delay);
-                    routeOutput.publish(new SensorMessage(bagageMessageDTO.getBagageID(), bagageMessageDTO.getConveyorID(), new Date()));
-                } catch (InterruptedException e) {
-                    logger.error(e.getMessage());
-                }
-            } else {
-                calculateDelay(conveyor);
+
+            if(conveyorRepository.contains(bagage.getConveyorID())){
+                currentConveyor = conveyorRepository.getConveyor(bagage.getConveyorID());
+            }else {
+                currentConveyor = routeInput.getConveyor(bagage.getConveyorID());
+                logger.info("Succesfully received conveyor with ID " + currentConveyor.getConveyorID() + " from proxy");
             }
+
+
+
+        } catch (APIException e) {
+            destinationConveyor = null;
+            currentConveyor = null;
+            logger.error(e.getMessage());
+            logger.error(e.getCause().getMessage());
+        }
+        if (destinationConveyor == null || currentConveyor == null) delayMethod = DelayMethod.FIXED;
+        if (delayMethod == DelayMethod.FIXED) {
+            publish(bagageMessageDTO, delay);
+        } else {
+            publish(bagageMessageDTO, calculateDelay(destinationConveyor, currentConveyor, originConveyor, timedifference));
         }
     }
 
-    private int calculateDelay(Conveyor conveyor) {
-        int delayInSeconds = 0;
-        Conveyor currentConveyor;
-        for (Segment s : conveyor.getSegments()) {
-            if (s.getOutPoint() == conveyor.getConveyorID()) {
-                delayInSeconds += s.getDistance() / conveyor.getSpeed();
+
+
+    private long calculateDelay(Conveyor destinationConveyor, Conveyor currentConveyor, Conveyor originConveyor, long timedifference) {
+        long delayInMilliSeconds = 0;
+        long conveyorCycleDuration = (currentConveyor.getLength() / currentConveyor.getSpeed()) * 1000;
+        long currentCycle = timedifference % conveyorCycleDuration;
+        long timeToOut = 0;
+        long durationToOutPoint = 0;
+        for (Segment s : currentConveyor.getSegments()) {
+            if (s.getOutPoint() == destinationConveyor.getConveyorID() && s.getInPoint() == originConveyor.getConveyorID()) {
+                durationToOutPoint = (s.getDistance() / currentConveyor.getSpeed()) * 1000;
+                timeToOut = (durationToOutPoint) * 1000;
             }
         }
-        for (Connector c : conveyor.getConnectors()) {
-            if (c.getConnectedConveyorID() == conveyor.getConveyorID()) {
-                delayInSeconds += c.getLength() / c.getSpeed();
+        if ((timeToOut - currentCycle) > 0) {
+            delayInMilliSeconds += timeToOut - currentCycle;
+        } else {
+            delayInMilliSeconds += (conveyorCycleDuration - currentCycle) + durationToOutPoint;
+        }
+        for(Connector connector : currentConveyor.getConnectors()){
+            if(connector.getType().equals("outgoing") && connector.getConnectedConveyorID() == destinationConveyor.getConveyorID()){
+                delayInMilliSeconds += (connector.getLength()/connector.getSpeed());
             }
         }
-        return delayInSeconds;
+
+        return delayInMilliSeconds;
+    }
+
+    private void publish(BagageMessageDTO bagageMessageDTO, long sleep) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(sleep);
+                routeOutput.publish(new SensorMessage(bagageMessageDTO.getBagageID(), bagageMessageDTO.getConveyorID(), new Date()));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
 
     @Override
     public void update(Observable o, Object arg) {
         result = (BagageMessageDTO) arg;
-        bagageMessageDTOs.add(result);
-        doTask();
         logger.info("Retrieved BagageMessageDTO from rabbitMQ: " + result.toString());
+        new Thread(() -> {
+            doTask(result);
+        }).start();
     }
 }
 
