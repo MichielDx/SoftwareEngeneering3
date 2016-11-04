@@ -28,10 +28,8 @@ public class Main {
 
         //Thread day = new Thread(dayScheduler);
         Thread bagage = new Thread(bagageScheduler);
-        Thread route = new Thread(routeScheduler);
         //day.start();
         //bagage.start();
-        route.start();
     }
 
     private static FrequencySchedule getFrequencySchedule(){

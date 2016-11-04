@@ -8,6 +8,18 @@ public class Segment {
     private int outPoint;
     private int distance;
 
+    public int getInPoint() {
+        return inPoint;
+    }
+
+    public int getOutPoint() {
+        return outPoint;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
     public void setInPoint(int inPoint) {
         this.inPoint = inPoint;
     }

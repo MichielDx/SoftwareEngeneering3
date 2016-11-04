@@ -9,6 +9,22 @@ public class Connector {
     private int length;
     private int speed;
 
+    public int getConnectedConveyorID() {
+        return connectedConveyorID;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
     public void setConnectedConveyorID(int connectedConveyorID) {
         this.connectedConveyorID = connectedConveyorID;
     }

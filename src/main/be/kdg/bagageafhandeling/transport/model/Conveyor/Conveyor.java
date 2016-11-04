@@ -24,6 +24,22 @@ public class Conveyor {
         return conveyorID;
     }
 
+    public int getLength() {
+        return length;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public List<Connector> getConnectors() {
+        return connectors;
+    }
+
+    public List<Segment> getSegments() {
+        return segments;
+    }
+
     public void setConveyorID(int conveyorID) {
         this.conveyorID = conveyorID;
     }
