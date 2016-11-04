@@ -1,6 +1,8 @@
 package main.be.kdg.bagageafhandeling.transport;
 
 import main.be.kdg.bagageafhandeling.transport.engine.RouteScheduler;
+import main.be.kdg.bagageafhandeling.transport.engine.SensorScheduler;
+import main.be.kdg.bagageafhandeling.transport.model.Enum.DelayMethod;
 import main.be.kdg.bagageafhandeling.transport.model.FrequencySchedule;
 import main.be.kdg.bagageafhandeling.transport.model.Enum.SimulatorMode;
 import main.be.kdg.bagageafhandeling.transport.model.TimePeriod;
@@ -23,14 +25,17 @@ public class Main {
         //DayScheduler dayScheduler = new DayScheduler(f);
         BagageScheduler bagageScheduler = new BagageScheduler(f.getCurrentTimePeriod(), "C:\\Users\\Michiel\\Desktop\\test.json", FormatOption.JSON, SimulatorMode.REPLAY);
         RouteScheduler routeScheduler = new RouteScheduler();
+        SensorScheduler sensorScheduler = new SensorScheduler(DelayMethod.CALCULATED,2000);
         //dayScheduler.addObserver(bagageScheduler);
 
         //Thread day = new Thread(dayScheduler);
         Thread bagage = new Thread(bagageScheduler);
         Thread route = new Thread(routeScheduler);
+        Thread sensor = new Thread(sensorScheduler);
         //day.start();
         //bagage.start();
         route.start();
+        sensor.start();
     }
 
     private static FrequencySchedule getFrequencySchedule(){
