@@ -2,6 +2,8 @@ package main.be.kdg.bagageafhandeling.transport.adapters.in;
 
 import be.kdg.se3.proxy.ConveyorServiceProxy;
 import com.google.gson.Gson;
+import main.be.kdg.bagageafhandeling.transport.exceptions.APIException;
+import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
 import main.be.kdg.bagageafhandeling.transport.model.Conveyor;
 import main.be.kdg.bagageafhandeling.transport.services.ConveyorService;
 import retrofit2.Retrofit;
@@ -28,12 +30,13 @@ public class ConveyorServiceAPI implements ConveyorService {
     }
 
     @Override
-    public Conveyor fetchConveyor(@Path("conveyorID") int conveyorId) {
+    public Conveyor fetchConveyor(@Path("conveyorID") int conveyorId) throws APIException {
         //conveyor = conveyorService.fetchConveyor(conveyorId);
         try {
-            conveyor = gson.fromJson(conveyorServiceProxy.get("http://www.services4se3.com/conveyorservice/" + conveyorId), Conveyor.class);
+            String result = conveyorServiceProxy.get("www.services4se3.com/conveyorservice/" + conveyorId);
+            conveyor = gson.fromJson(result, Conveyor.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new APIException("Error when trying to convert from json to conveyor", e);
         }
         return conveyor;
     }

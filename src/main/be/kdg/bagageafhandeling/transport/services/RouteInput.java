@@ -2,6 +2,7 @@ package main.be.kdg.bagageafhandeling.transport.services;
 
 import main.be.kdg.bagageafhandeling.transport.adapters.in.RabbitMQ;
 import main.be.kdg.bagageafhandeling.transport.engine.RouteScheduler;
+import main.be.kdg.bagageafhandeling.transport.exceptions.APIException;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
 import main.be.kdg.bagageafhandeling.transport.model.Conveyor;
 import org.apache.log4j.Logger;
@@ -30,7 +31,7 @@ public class RouteInput {
         this.conveyorService = conveyorService;
     }
 
-    public Conveyor getConveyor(int conveyorId){
+    public Conveyor getConveyor(int conveyorId) throws APIException{
         return conveyorService.fetchConveyor(conveyorId);
 
     }
