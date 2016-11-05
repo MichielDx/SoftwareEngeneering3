@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class Controller {
 
-    private String log4jConfPath = "C:\\Users\\Michiel\\SoftwareEngineering3\\src\\main\\log4j.properties";
+    private String log4jConfPath = "C:\\Users\\Arthur Haelterman\\SoftwareEngineering3\\src\\main\\log4j.properties";
     private FrequencySchedule f;
     private DayScheduler dayScheduler;
     private BagageScheduler bagageScheduler;
@@ -31,14 +31,13 @@ public class Controller {
     private DelayMethod method;
     private String recordPath;
 
-
     public Controller(){
-        f = getFrequencySchedule();
-        PropertyConfigurator.configure(log4jConfPath);
-        this.dayScheduler = new DayScheduler(f);
     }
 
     public void initialize(){
+        f = getFrequencySchedule();
+        PropertyConfigurator.configure(log4jConfPath);
+        this.dayScheduler = new DayScheduler(f);
         bagageScheduler = new BagageScheduler(f.getCurrentTimePeriod(),recordPath,option,mode);
         routeScheduler = new RouteScheduler(method,2000,getSecurityList());
         dayScheduler = new DayScheduler(f);

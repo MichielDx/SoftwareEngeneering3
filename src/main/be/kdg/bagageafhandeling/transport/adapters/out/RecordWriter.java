@@ -23,6 +23,7 @@ public class RecordWriter {
     public void initialize() throws RecordWriterException {
         try {
             fileWriter = new FileWriter(file);
+            logger.info("Succesfully created record file: " + file.getAbsolutePath() );
         } catch (IOException e) {
             throw new RecordWriterException("Unable to create file", e);
         }
@@ -54,6 +55,6 @@ public class RecordWriter {
                 throw new RecordWriterException("Unable to close writer", ex);
             }
         }
-        logger.info("Succesfully written file: " + file.getAbsolutePath());
+        logger.info("Succesfully written to record file: " + file.getAbsolutePath());
     }
 }

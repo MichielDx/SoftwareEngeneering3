@@ -20,7 +20,7 @@ public class Main {
         Controller controller = new Controller();
         controller.setMode(SimulatorMode.GENERATION);
         controller.setOption(FormatOption.JSON);
-        controller.setRecordPath("C:\\Users\\Michiel\\Desktop\\test.json");
+        controller.setRecordPath("C:\\Users\\Arthur Haelterman\\Desktop\\test.json");
         controller.setMethod(DelayMethod.CALCULATED);
         controller.initialize();
         controller.start();

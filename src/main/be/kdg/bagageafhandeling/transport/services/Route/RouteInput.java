@@ -22,7 +22,7 @@ public class RouteInput {
     }
 
     public void initializeRabbitMQ(RouteScheduler routeScheduler) throws MessageInputException {
-        rabbitMQ = new RabbitMQ("organiserRouteQueue");
+        rabbitMQ = new RabbitMQ("routeInputQueue");
         rabbitMQ.initialize();
         rabbitMQ.addObserver(routeScheduler);
         rabbitMQ.retrieve();
