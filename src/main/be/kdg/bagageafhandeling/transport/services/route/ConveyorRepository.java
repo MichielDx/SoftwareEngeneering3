@@ -15,7 +15,7 @@ public class ConveyorRepository {
         conveyorCache = new HashMap<>();
     }
 
-    public static void addConveyor(Conveyor conveyor){
+    public synchronized static void addConveyor(Conveyor conveyor){
         conveyorCache.put(conveyor.getConveyorID(),conveyor);
     }
 

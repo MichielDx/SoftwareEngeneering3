@@ -1,8 +1,8 @@
 package main.be.kdg.bagageafhandeling.transport.services.bagage;
 
-import main.be.kdg.bagageafhandeling.transport.models.bagage.Bagage;
-import main.be.kdg.bagageafhandeling.transport.models.bagage.BagageRecordList;
-import main.be.kdg.bagageafhandeling.transport.services.interfaces.BagageConversionService;
+import main.be.kdg.bagageafhandeling.transport.models.baggage.Baggage;
+import main.be.kdg.bagageafhandeling.transport.models.baggage.BaggageRecordList;
+import main.be.kdg.bagageafhandeling.transport.services.interfaces.BaggageConversionService;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -14,7 +14,7 @@ import java.io.StringWriter;
 /**
  * Created by Michiel on 2/11/2016.
  */
-public class BagageXmlService implements BagageConversionService {
+public class BaggageXmlService implements BaggageConversionService {
     private JAXBContext jaxbContext;
     private Marshaller jaxbMarshaller;
     private Unmarshaller jaxbUnmarshaller;
@@ -22,12 +22,12 @@ public class BagageXmlService implements BagageConversionService {
     private StringWriter sw;
     private String xmlString;
 
-    public String serialize(Bagage bagage) {
+    public String serialize(Baggage baggage) {
         try {
-            jaxbContext = JAXBContext.newInstance(Bagage.class);
+            jaxbContext = JAXBContext.newInstance(Baggage.class);
             jaxbMarshaller = jaxbContext.createMarshaller();
             sw = new StringWriter();
-            jaxbMarshaller.marshal(bagage, sw);
+            jaxbMarshaller.marshal(baggage, sw);
             xmlString = sw.toString();
 
         } catch (JAXBException e) {
@@ -37,9 +37,9 @@ public class BagageXmlService implements BagageConversionService {
     }
 
     @Override
-    public String serializeAll(BagageRecordList bagages) {
+    public String serializeAll(BaggageRecordList bagages) {
         try {
-            jaxbContext = JAXBContext.newInstance(BagageRecordList.class);
+            jaxbContext = JAXBContext.newInstance(BaggageRecordList.class);
             jaxbMarshaller = jaxbContext.createMarshaller();
             sw = new StringWriter();
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -53,18 +53,18 @@ public class BagageXmlService implements BagageConversionService {
     }
 
     @Override
-    public BagageRecordList deserializeAll(String string) {
-        BagageRecordList bagageRecordList = null;
+    public BaggageRecordList deserializeAll(String string) {
+        BaggageRecordList baggageRecordList = null;
         try {
-            jaxbContext = JAXBContext.newInstance(BagageRecordList.class);
+            jaxbContext = JAXBContext.newInstance(BaggageRecordList.class);
             jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             sw = new StringWriter();
             reader = new StringReader(string);
-            bagageRecordList = (BagageRecordList) jaxbUnmarshaller.unmarshal(reader);
+            baggageRecordList = (BaggageRecordList) jaxbUnmarshaller.unmarshal(reader);
 
         } catch (JAXBException e) {
             e.printStackTrace();
         }
-        return bagageRecordList;
+        return baggageRecordList;
     }
 }

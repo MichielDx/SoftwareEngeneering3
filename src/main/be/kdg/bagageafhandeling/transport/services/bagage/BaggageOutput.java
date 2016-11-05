@@ -4,38 +4,38 @@ import main.be.kdg.bagageafhandeling.transport.adapters.out.RabbitMQ;
 import main.be.kdg.bagageafhandeling.transport.adapters.out.RecordWriter;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageOutputException;
 import main.be.kdg.bagageafhandeling.transport.exceptions.RecordWriterException;
-import main.be.kdg.bagageafhandeling.transport.models.bagage.Bagage;
-import main.be.kdg.bagageafhandeling.transport.models.bagage.BagageRecordList;
-import main.be.kdg.bagageafhandeling.transport.services.interfaces.BagageConversionService;
+import main.be.kdg.bagageafhandeling.transport.models.baggage.Baggage;
+import main.be.kdg.bagageafhandeling.transport.models.baggage.BaggageRecordList;
+import main.be.kdg.bagageafhandeling.transport.services.interfaces.BaggageConversionService;
 import org.apache.log4j.Logger;
 
 /**
  * Created by Michiel on 2/11/2016.
  */
-public class BagageOutput {
+public class BaggageOutput {
     private RabbitMQ rabbitMQ;
     private boolean record = false;
     private RecordWriter recorder;
-    private BagageXmlService rabbitSerializer;
-    private BagageConversionService recordSerializer;
-    private BagageRecordList bagageRecordList;
-    private BagageRepository bagageRepository;
-    private Logger logger = Logger.getLogger(BagageOutput.class);
+    private BaggageXmlService rabbitSerializer;
+    private BaggageConversionService recordSerializer;
+    private BaggageRecordList baggageRecordList;
+    private BaggageRepository baggageRepository;
+    private Logger logger = Logger.getLogger(BaggageOutput.class);
 
-    public BagageOutput() {
+    public BaggageOutput() {
         rabbitMQ = new RabbitMQ("bagageOutputQueue");
         initialize();
-        rabbitSerializer = new BagageXmlService();
+        rabbitSerializer = new BaggageXmlService();
     }
 
-    public BagageOutput(String recordPath, BagageConversionService recordSerializer, boolean record) {
+    public BaggageOutput(String recordPath, BaggageConversionService recordSerializer, boolean record) {
         rabbitMQ = new RabbitMQ("bagageOutputQueue");
         recorder = new RecordWriter(recordPath);
-        bagageRepository = new BagageRepository();
-        bagageRecordList = new BagageRecordList();
+        baggageRepository = new BaggageRepository();
+        baggageRecordList = new BaggageRecordList();
         this.record = record;
         initialize();
-        rabbitSerializer = new BagageXmlService();
+        rabbitSerializer = new BaggageXmlService();
         this.recordSerializer = recordSerializer;
 
     }
@@ -52,12 +52,12 @@ public class BagageOutput {
         }
     }
 
-    public void publish(Bagage bagage) {
+    public void publish(Baggage baggage) {
         try {
-            rabbitMQ.publish(rabbitSerializer.serialize(bagage));
-            bagageRepository.addBagage(bagage);
+            rabbitMQ.publish(rabbitSerializer.serialize(baggage));
+            baggageRepository.addBagage(baggage);
             if (this.record) {
-                bagageRecordList.add(bagage);
+                baggageRecordList.add(baggage);
             }
         } catch (MessageOutputException e) {
             logger.error(e.getMessage());
@@ -67,7 +67,7 @@ public class BagageOutput {
 
     public void write() {
         try {
-            recorder.write(recordSerializer.serializeAll(bagageRecordList));
+            recorder.write(recordSerializer.serializeAll(baggageRecordList));
         } catch (RecordWriterException e) {
             logger.error(e.getMessage());
             logger.error(e.getCause().getMessage());

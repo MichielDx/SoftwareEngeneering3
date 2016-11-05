@@ -6,18 +6,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Created by Michiel on 3/11/2016.
  */
-@XmlRootElement(name="bagage")
-public class BagageMessageDTO {
+@XmlRootElement(name="baggage")
+public class BaggageMessageDTO {
     @XmlElement
     private int bagageID;
     @XmlElement
     private int conveyorID;
 
-    public BagageMessageDTO() {
+    public BaggageMessageDTO() {
         
     }
 
-    public BagageMessageDTO(int bagageID, int conveyorID) {
+    public BaggageMessageDTO(int bagageID, int conveyorID) {
         this.bagageID = bagageID;
         this.conveyorID = conveyorID;
     }
