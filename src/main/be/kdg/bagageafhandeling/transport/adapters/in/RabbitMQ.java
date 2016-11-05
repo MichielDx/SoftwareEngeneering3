@@ -2,8 +2,8 @@ package main.be.kdg.bagageafhandeling.transport.adapters.in;
 
 import com.rabbitmq.client.*;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
-import main.be.kdg.bagageafhandeling.transport.model.DTO.BagageMessageDTO;
-import main.be.kdg.bagageafhandeling.transport.services.Interface.MessageInputService;
+import main.be.kdg.bagageafhandeling.transport.models.dto.BagageMessageDTO;
+import main.be.kdg.bagageafhandeling.transport.services.interfaces.MessageInputService;
 import org.apache.log4j.Logger;
 
 import javax.xml.bind.JAXBContext;

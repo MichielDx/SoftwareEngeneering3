@@ -4,7 +4,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageOutputException;
-import main.be.kdg.bagageafhandeling.transport.services.Interface.MessageOutputService;
+import main.be.kdg.bagageafhandeling.transport.services.interfaces.MessageOutputService;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
