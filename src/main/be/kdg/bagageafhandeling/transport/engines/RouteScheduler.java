@@ -81,9 +81,6 @@ public class RouteScheduler implements Observer {
                 currentConveyor = routeInput.getConveyor(bagage.getConveyorID());
                 logger.info("Succesfully received conveyor with ID " + currentConveyor.getConveyorID() + " from proxy");
             }
-
-
-
         } catch (APIException e) {
             destinationConveyor = null;
             currentConveyor = null;
@@ -122,7 +119,6 @@ public class RouteScheduler implements Observer {
                 delayInMilliSeconds += (connector.getLength()/connector.getSpeed());
             }
         }
-
         return delayInMilliSeconds;
     }
 
@@ -142,9 +138,7 @@ public class RouteScheduler implements Observer {
     public void update(Observable o, Object arg) {
         result = (BagageMessageDTO) arg;
         logger.info("Retrieved BagageMessageDTO from rabbitMQ: " + result.toString());
-        new Thread(() -> {
-            doTask(result);
-        }).start();
+        new Thread(() -> doTask(result)).start();
     }
 }
 

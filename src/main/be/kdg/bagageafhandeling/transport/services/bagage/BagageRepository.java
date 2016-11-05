@@ -15,11 +15,11 @@ public class BagageRepository {
         bagageList = new ArrayList<>();
     }
 
-    public void addBagage(Bagage bagage) {
+    public synchronized void addBagage(Bagage bagage) {
         bagageList.add(bagage);
     }
 
-    public static void updateBagage(Bagage bagage) {
+    public synchronized static void updateBagage(Bagage bagage) {
         bagageList.set(bagage.getBagageID(), bagage);
     }
 
