@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Created by Michiel on 3/11/2016.
  */
-@XmlRootElement(name="bagage")
+@XmlRootElement(name="route")
 public class BagageMessageDTO {
     @XmlElement
     private int bagageID;
