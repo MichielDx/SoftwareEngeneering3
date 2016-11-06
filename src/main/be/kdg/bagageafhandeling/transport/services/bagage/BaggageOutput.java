@@ -23,13 +23,13 @@ public class BaggageOutput {
     private Logger logger = Logger.getLogger(BaggageOutput.class);
 
     public BaggageOutput() {
-        rabbitMQ = new RabbitMQ("bagageOutputQueue");
+        rabbitMQ = new RabbitMQ("baggageOutputQueue");
         initialize();
         rabbitSerializer = new BaggageXmlService();
     }
 
     public BaggageOutput(String recordPath, BaggageConversionService recordSerializer, boolean record) {
-        rabbitMQ = new RabbitMQ("bagageOutputQueue");
+        rabbitMQ = new RabbitMQ("baggageOutputQueue");
         recorder = new RecordWriter(recordPath);
         baggageRepository = new BaggageRepository();
         baggageRecordList = new BaggageRecordList();

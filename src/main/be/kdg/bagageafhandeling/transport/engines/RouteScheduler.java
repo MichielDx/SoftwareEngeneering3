@@ -52,10 +52,10 @@ public class RouteScheduler implements Observer {
     }
 
     private void doTask(BaggageMessageDTO baggageMessageDTO) {
-        if(securityList.containsKey(baggageMessageDTO.getBagageID()) && securityList.containsValue(baggageMessageDTO.getConveyorID())){
+        if(securityList.containsKey(baggageMessageDTO.getBaggageID()) && securityList.containsValue(baggageMessageDTO.getConveyorID())){
             return;
         }
-        Baggage baggage = BaggageRepository.getBagage(baggageMessageDTO.getBagageID());
+        Baggage baggage = BaggageRepository.getBagage(baggageMessageDTO.getBaggageID());
         long timedifference = System.currentTimeMillis() - baggage.getTimestamp().getTime();
         Conveyor originConveyor = null;
         Conveyor destinationConveyor = null;
@@ -126,7 +126,7 @@ public class RouteScheduler implements Observer {
         new Thread(() -> {
             try {
                 Thread.sleep(sleep);
-                routeOutput.publish(new SensorMessage(baggageMessageDTO.getBagageID(), baggageMessageDTO.getConveyorID(), new Date()));
+                routeOutput.publish(new SensorMessage(baggageMessageDTO.getBaggageID(), baggageMessageDTO.getConveyorID(), new Date()));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
