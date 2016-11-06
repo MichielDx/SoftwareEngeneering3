@@ -3,16 +3,16 @@ package main.be.kdg.bagageafhandeling.transport.engines;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.Baggage;
 import main.be.kdg.bagageafhandeling.transport.models.dto.BaggageMessageDTO;
 import main.be.kdg.bagageafhandeling.transport.services.bagage.BaggageRepository;
-import main.be.kdg.bagageafhandeling.transport.adapters.in.ConveyorServiceAPI;
+import main.be.kdg.bagageafhandeling.transport.adapters.in.ConveyorServiceProxy;
 import main.be.kdg.bagageafhandeling.transport.exceptions.APIException;
-import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
 import main.be.kdg.bagageafhandeling.transport.models.conveyor.Connector;
 import main.be.kdg.bagageafhandeling.transport.models.conveyor.Conveyor;
 import main.be.kdg.bagageafhandeling.transport.models.conveyor.Segment;
 import main.be.kdg.bagageafhandeling.transport.models.enums.DelayMethod;
 import main.be.kdg.bagageafhandeling.transport.models.SensorMessage;
+import main.be.kdg.bagageafhandeling.transport.services.interfaces.ConveyorService;
 import main.be.kdg.bagageafhandeling.transport.services.route.ConveyorRepository;
-import main.be.kdg.bagageafhandeling.transport.services.route.RouteInput;
+import main.be.kdg.bagageafhandeling.transport.services.route.ConveyorAPI;
 import main.be.kdg.bagageafhandeling.transport.services.route.RouteOutput;
 import org.apache.log4j.Logger;
 
@@ -24,7 +24,7 @@ import java.util.*;
 public class RouteScheduler implements Observer {
 
     private RouteOutput routeOutput;
-    private RouteInput routeInput;
+    private ConveyorAPI conveyorAPI;
     private DelayMethod delayMethod;
     private BaggageMessageDTO result;
     private long delay;
@@ -32,24 +32,15 @@ public class RouteScheduler implements Observer {
     private Logger logger = Logger.getLogger(RouteScheduler.class);
     private ConveyorRepository conveyorRepository;
 
-    public RouteScheduler(DelayMethod delayMethod, long delay, Map<Integer,Integer> securityList) {
+    public RouteScheduler(ConveyorService conveyorService,DelayMethod delayMethod, long delay, Map<Integer,Integer> securityList) {
         this.delayMethod = delayMethod;
         this.securityList = securityList;
         this.delay = delay;
-        initialize();
-    }
-
-    private void initialize() {
-        this.routeInput = new RouteInput();
-        conveyorRepository = new ConveyorRepository();
-        routeInput.initializeAPI(new ConveyorServiceAPI());
-        /*try {
-            routeInput.initializeRabbitMQ(this);
-        } catch (MessageInputException e) {
-            logger.error(e.getMessage());
-        }*/
+        this.conveyorAPI = new ConveyorAPI(conveyorService);
+        this.conveyorRepository = new ConveyorRepository();
         this.routeOutput = new RouteOutput();
     }
+
 
     private void doTask(BaggageMessageDTO baggageMessageDTO) {
         if(securityList.containsKey(baggageMessageDTO.getBaggageID()) && securityList.containsValue(baggageMessageDTO.getConveyorID())){
@@ -64,21 +55,21 @@ public class RouteScheduler implements Observer {
             if(conveyorRepository.contains(baggageMessageDTO.getConveyorID())){
                 destinationConveyor = conveyorRepository.getConveyor(baggageMessageDTO.getConveyorID());
             }else {
-                destinationConveyor = routeInput.getConveyor(baggageMessageDTO.getConveyorID());
+                destinationConveyor = conveyorAPI.getConveyor(baggageMessageDTO.getConveyorID());
                 logger.info("Succesfully received conveyor with ID " + destinationConveyor.getConveyorID() + " from proxy");
             }
 
             if(conveyorRepository.contains(baggage.getSensorID())){
                 originConveyor = conveyorRepository.getConveyor(baggage.getSensorID());
             }else {
-                originConveyor = routeInput.getConveyor(baggage.getSensorID());
+                originConveyor = conveyorAPI.getConveyor(baggage.getSensorID());
                 logger.info("Succesfully received conveyor with ID " + originConveyor.getConveyorID() + " from proxy");
             }
 
             if(conveyorRepository.contains(baggage.getConveyorID())){
                 currentConveyor = conveyorRepository.getConveyor(baggage.getConveyorID());
             }else {
-                currentConveyor = routeInput.getConveyor(baggage.getConveyorID());
+                currentConveyor = conveyorAPI.getConveyor(baggage.getConveyorID());
                 logger.info("Succesfully received conveyor with ID " + currentConveyor.getConveyorID() + " from proxy");
             }
         } catch (APIException e) {

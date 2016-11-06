@@ -1,5 +1,6 @@
 package main.be.kdg.bagageafhandeling.transport.controllers;
 
+import main.be.kdg.bagageafhandeling.transport.adapters.in.ConveyorServiceProxy;
 import main.be.kdg.bagageafhandeling.transport.engines.BaggageScheduler;
 import main.be.kdg.bagageafhandeling.transport.engines.DayScheduler;
 import main.be.kdg.bagageafhandeling.transport.engines.RouteScheduler;
@@ -8,6 +9,7 @@ import main.be.kdg.bagageafhandeling.transport.models.enums.FormatOption;
 import main.be.kdg.bagageafhandeling.transport.models.enums.SimulatorMode;
 import main.be.kdg.bagageafhandeling.transport.models.FrequencySchedule;
 import main.be.kdg.bagageafhandeling.transport.models.TimePeriod;
+import main.be.kdg.bagageafhandeling.transport.services.Retriever;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.File;
@@ -31,6 +33,7 @@ public class Controller {
     private SimulatorMode mode;
     private DelayMethod method;
     private String recordPath;
+    private Retriever routeInputQueue;
 
     public Controller(){
     }
@@ -40,7 +43,8 @@ public class Controller {
         PropertyConfigurator.configure(path);
         this.dayScheduler = new DayScheduler(f);
         baggageScheduler = new BaggageScheduler(f.getCurrentTimePeriod(),recordPath,option,mode);
-        routeScheduler = new RouteScheduler(method,2000,getSecurityList());
+        routeScheduler = new RouteScheduler(new ConveyorServiceProxy(),method,2000,getSecurityList());
+        routeInputQueue = new Retriever("routeOutputQueue",routeScheduler);
         dayScheduler = new DayScheduler(f);
         day = new Thread(dayScheduler);
         bagage = new Thread(baggageScheduler);
