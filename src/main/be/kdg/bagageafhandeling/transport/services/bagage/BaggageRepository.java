@@ -23,7 +23,14 @@ public class BaggageRepository {
         baggageList.set(baggage.getBaggageID(), baggage);
     }
 
-    public static Baggage getBagage(int bagageID) {
-        return baggageList.get(bagageID);
+    public synchronized static Baggage getBagage(int baggageID) {
+        Baggage temp = null;
+        for(Baggage baggage : baggageList){
+            if(baggageID == baggage.getBaggageID()){
+                temp = baggage;
+                break;
+            }
+        }
+        return temp;
     }
 }
