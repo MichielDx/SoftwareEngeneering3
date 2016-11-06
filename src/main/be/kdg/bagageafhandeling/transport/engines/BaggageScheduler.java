@@ -79,7 +79,7 @@ public class BaggageScheduler implements Runnable, Observer {
             try {
                 setParameters();
                 baggageOutput.publish(baggage);
-                logger.info(String.format("Created baggage with ID %d at %s", baggage.getBaggageID(), sdf.format(baggage.getTimestamp())));
+                logger.info(String.format("Created and published baggage with ID %d at %s", baggage.getBaggageID(), sdf.format(baggage.getTimestamp())));
                 try {
                     Thread.sleep(frequency);
                 } catch (InterruptedException e) {

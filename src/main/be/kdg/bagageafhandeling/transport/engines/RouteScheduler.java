@@ -49,7 +49,7 @@ public class RouteScheduler implements Observer {
         Conveyor originConveyor = null;
         Conveyor destinationConveyor = null;
         Conveyor currentConveyor = null;
-        logger.info("Attempting to switch baggage: " + baggage.getBaggageID() + " to conveyor :");
+        logger.info("Received RouteMessage for baggage ID = "  + baggage.getBaggageID() + " attempting to switch baggage: to conveyor ID = " +baggageMessageDTO.getConveyorID());
         try {
             if(conveyorRepository.contains(baggageMessageDTO.getConveyorID())){
                 destinationConveyor = conveyorRepository.getConveyor(baggageMessageDTO.getConveyorID());
@@ -127,7 +127,6 @@ public class RouteScheduler implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         result = (BaggageMessageDTO) arg;
-        logger.info("Retrieved BaggageMessageDTO from rabbitMQ: " + result.toString());
         new Thread(() -> doTask(result)).start();
     }
 }

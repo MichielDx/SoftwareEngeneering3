@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) {
         Controller controller = new Controller();
 
-        controller.setRecordPath("C:\\Users\\Michiel\\Desktop\\test.json");
+        controller.setRecordPath("C:\\Users\\Arthur Haelterman\\Desktop\\test.json");
 
         controller.setMode(SimulatorMode.GENERATION);
         controller.setOption(FormatOption.JSON);
