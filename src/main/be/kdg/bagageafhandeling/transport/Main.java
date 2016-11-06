@@ -20,7 +20,7 @@ public class Main {
         controller.setMode(SimulatorMode.GENERATION);
         controller.setOption(FormatOption.JSON);
 
-        controller.setRouteInputQueue(new RabbitMQIn("routeInputQueue"));
+        controller.setRouteInputQueue(new RabbitMQIn("routeOutputQueue"));
         controller.setConveyorService(new ConveyorServiceAPI());
         controller.setMethod(DelayMethod.CALCULATED);
 
