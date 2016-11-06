@@ -82,6 +82,8 @@ public class RouteScheduler implements Observer {
             publish(baggage, delay);
         } else {
             baggage.setConveyorID(destinationConveyor.getConveyorID());
+            baggage.setSensorID(currentConveyor.getConveyorID());
+            BaggageRepository.updateBagage(baggage);
             publish(baggage, calculateDelay(destinationConveyor, currentConveyor, originConveyor, timedifference));
         }
     }
@@ -97,7 +99,7 @@ public class RouteScheduler implements Observer {
         for (Segment s : currentConveyor.getSegments()) {
             if (s.getOutPoint() == destinationConveyor.getConveyorID() && s.getInPoint() == originConveyor.getConveyorID()) {
                 durationToOutPoint = (s.getDistance() / currentConveyor.getSpeed()) * 1000;
-                timeToOut = (durationToOutPoint) * 1000;
+                timeToOut = durationToOutPoint;
             }
         }
         if ((timeToOut - currentCycle) > 0) {
@@ -107,7 +109,7 @@ public class RouteScheduler implements Observer {
         }
         for(Connector connector : currentConveyor.getConnectors()){
             if(connector.getType().equals("outgoing") && connector.getConnectedConveyorID() == destinationConveyor.getConveyorID()){
-                delayInMilliSeconds += (connector.getLength()/connector.getSpeed());
+                delayInMilliSeconds += ((connector.getLength()/connector.getSpeed())*1000);
             }
         }
         return delayInMilliSeconds;

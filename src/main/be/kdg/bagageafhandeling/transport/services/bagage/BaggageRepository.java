@@ -20,7 +20,7 @@ public class BaggageRepository {
     }
 
     public synchronized static void updateBagage(Baggage baggage) {
-        baggageList.set(baggage.getBaggageID(), baggage);
+        baggageList.set(baggage.getBaggageID()-1, baggage);
     }
 
     public synchronized static Baggage getBagage(int baggageID) {

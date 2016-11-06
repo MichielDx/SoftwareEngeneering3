@@ -51,4 +51,8 @@ public class Baggage {
     public void setConveyorID(int conveyorID) {
         this.conveyorID = conveyorID;
     }
+
+    public void setSensorID(int sensorID) {
+        this.sensorID = sensorID;
+    }
 }
