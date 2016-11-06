@@ -49,7 +49,7 @@ public class Controller {
         Publisher sensorMessagePublisher = new Publisher(sensorOutputQueue);
         this.dayScheduler = new DayScheduler(f);
         baggageScheduler = new BaggageScheduler(f.getCurrentTimePeriod(),recordPath,option,mode);
-        routeScheduler = new RouteScheduler(conveyorService,method,2000,getSecurityList(),sensorMessagePublisher);
+        routeScheduler = new RouteScheduler(method,2000,getSecurityList(),conveyorService,sensorMessagePublisher);
         Retriever routeInputRetriever = new Retriever(routeInputQueue ,routeScheduler);
         dayScheduler = new DayScheduler(f);
         day = new Thread(dayScheduler);

@@ -30,7 +30,7 @@ public class RouteScheduler implements Observer {
     private Logger logger = Logger.getLogger(RouteScheduler.class);
     private ConveyorRepository conveyorRepository;
 
-    public RouteScheduler(ConveyorService conveyorService,DelayMethod delayMethod, long delay, Map<Integer,Integer> securityList, Publisher routePublisher) {
+    public RouteScheduler(DelayMethod delayMethod, long delay, Map<Integer,Integer> securityList,ConveyorService conveyorService, Publisher routePublisher) {
         this.delayMethod = delayMethod;
         this.securityList = securityList;
         this.delay = delay;
