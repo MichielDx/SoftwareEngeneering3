@@ -25,7 +25,6 @@ public class PublisherXmlServiceImpl {
             sw = new StringWriter();
             jaxbMarshaller.marshal(object, sw);
             xmlString = sw.toString();
-
         } catch (JAXBException e) {
             e.printStackTrace();
         }

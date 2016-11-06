@@ -13,7 +13,8 @@ public class Publisher {
     private PublisherXmlServiceImpl xmlService;
     private Logger logger = Logger.getLogger(Publisher.class);
 
-    public Publisher(MessageOutputService messageOutputService) {
+    public Publisher(MessageOutputService messageOutputService, PublisherXmlServiceImpl publisherXmlService) {
+        this.xmlService = publisherXmlService;
         this.messageOutputService = messageOutputService;
         initialize();
     }

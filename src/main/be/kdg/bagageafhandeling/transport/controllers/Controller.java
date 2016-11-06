@@ -9,6 +9,7 @@ import main.be.kdg.bagageafhandeling.transport.models.enums.SimulatorMode;
 import main.be.kdg.bagageafhandeling.transport.models.FrequencySchedule;
 import main.be.kdg.bagageafhandeling.transport.models.TimePeriod;
 import main.be.kdg.bagageafhandeling.transport.services.Publisher;
+import main.be.kdg.bagageafhandeling.transport.services.PublisherXmlServiceImpl;
 import main.be.kdg.bagageafhandeling.transport.services.Retriever;
 import main.be.kdg.bagageafhandeling.transport.services.interfaces.ConveyorService;
 import main.be.kdg.bagageafhandeling.transport.services.interfaces.MessageInputService;
@@ -46,7 +47,8 @@ public class Controller {
     public void initialize(){
         f = getFrequencySchedule();
         PropertyConfigurator.configure(path);
-        Publisher sensorMessagePublisher = new Publisher(sensorOutputQueue);
+        PublisherXmlServiceImpl publisherXmlService = new PublisherXmlServiceImpl();
+        Publisher sensorMessagePublisher = new Publisher(sensorOutputQueue, publisherXmlService);
         this.dayScheduler = new DayScheduler(f);
         baggageScheduler = new BaggageScheduler(f.getCurrentTimePeriod(),recordPath,option,mode);
         routeScheduler = new RouteScheduler(method,2000,getSecurityList(),conveyorService,sensorMessagePublisher);
