@@ -29,7 +29,7 @@ public class RouteOutput {
         }
     }
 
-    public void publish(SensorMessage sensorMessage) {
+    public synchronized void publish(SensorMessage sensorMessage) {
         try {
             rabbitMQ.publish(routeXmlService.serialize(sensorMessage));
         } catch (MessageOutputException e) {
