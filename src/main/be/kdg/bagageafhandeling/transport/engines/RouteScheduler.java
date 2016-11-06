@@ -43,11 +43,11 @@ public class RouteScheduler implements Observer {
         this.routeInput = new RouteInput();
         conveyorRepository = new ConveyorRepository();
         routeInput.initializeAPI(new ConveyorServiceAPI());
-        try {
+        /*try {
             routeInput.initializeRabbitMQ(this);
         } catch (MessageInputException e) {
             logger.error(e.getMessage());
-        }
+        }*/
         this.routeOutput = new RouteOutput();
     }
 
