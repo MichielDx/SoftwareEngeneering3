@@ -45,6 +45,7 @@ public class Controller {
         baggageScheduler = new BaggageScheduler(f.getCurrentTimePeriod(),recordPath,option,mode);
         routeScheduler = new RouteScheduler(new ConveyorServiceAPI(),method,2000,getSecurityList());
         routeInputQueue = new Retriever("routeOutputQueue",routeScheduler);
+        routeInputQueue.initialize();
         dayScheduler = new DayScheduler(f);
         day = new Thread(dayScheduler);
         bagage = new Thread(baggageScheduler);

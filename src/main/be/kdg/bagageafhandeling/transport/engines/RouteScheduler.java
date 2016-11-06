@@ -79,9 +79,10 @@ public class RouteScheduler implements Observer {
         }
         if (destinationConveyor == null || currentConveyor == null) delayMethod = DelayMethod.FIXED;
         if (delayMethod == DelayMethod.FIXED) {
-            publish(baggageMessageDTO, delay);
+            publish(baggage, delay);
         } else {
-            publish(baggageMessageDTO, calculateDelay(destinationConveyor, currentConveyor, originConveyor, timedifference));
+            baggage.setConveyorID(destinationConveyor.getConveyorID());
+            publish(baggage, calculateDelay(destinationConveyor, currentConveyor, originConveyor, timedifference));
         }
     }
 
@@ -112,11 +113,11 @@ public class RouteScheduler implements Observer {
         return delayInMilliSeconds;
     }
 
-    private void publish(BaggageMessageDTO baggageMessageDTO, long sleep) {
+    private void publish(Baggage baggage, long sleep) {
         new Thread(() -> {
             try {
                 Thread.sleep(sleep);
-                routeOutput.publish(new SensorMessage(baggageMessageDTO.getBaggageID(), baggageMessageDTO.getConveyorID(), new Date()));
+                routeOutput.publish(new SensorMessage(baggage.getBaggageID(), baggage.getConveyorID(), new Date()));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

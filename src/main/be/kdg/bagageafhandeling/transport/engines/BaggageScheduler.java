@@ -75,7 +75,7 @@ public class BaggageScheduler implements Runnable, Observer {
     @Override
     public void run() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        while (running) {
+        //while (running) {
             try {
                 setParameters();
                 baggageOutput.publish(baggage);
@@ -90,8 +90,8 @@ public class BaggageScheduler implements Runnable, Observer {
                 running = false;
 
             }
-        }
-        System.exit(0);
+        //}
+        //System.exit(0);
     }
 
     private void setParameters() throws EndReplayException {

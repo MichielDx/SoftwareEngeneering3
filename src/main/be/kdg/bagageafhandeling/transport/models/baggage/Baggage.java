@@ -47,4 +47,8 @@ public class Baggage {
     public Date getTimestamp() {
         return timestamp;
     }
+
+    public void setConveyorID(int conveyorID) {
+        this.conveyorID = conveyorID;
+    }
 }

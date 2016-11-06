@@ -9,8 +9,7 @@ import java.util.Random;
  */
 public class SensorIdGeneratorImpl implements IdGeneratorService {
     private static Random rnd = new Random();
-    private static final int[] sensorIds = new int[]{1,2,3,4,5};
-
+    private static final int[] sensorIds = new int[]{1,2,3,11,12,21,22,42,31,41};
 
     @Override
     public int getId() {
