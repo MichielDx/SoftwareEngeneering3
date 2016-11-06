@@ -1,6 +1,6 @@
 package main.be.kdg.bagageafhandeling.transport.services.bagage;
 
-import main.be.kdg.bagageafhandeling.transport.adapters.out.RabbitMQ;
+import main.be.kdg.bagageafhandeling.transport.adapters.out.RabbitMQOut;
 import main.be.kdg.bagageafhandeling.transport.adapters.out.RecordWriter;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageOutputException;
 import main.be.kdg.bagageafhandeling.transport.exceptions.RecordWriterException;
@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  * Created by Michiel on 2/11/2016.
  */
 public class BaggageOutput {
-    private RabbitMQ rabbitMQ;
+    private RabbitMQOut rabbitMQOut;
     private boolean record = false;
     private RecordWriter recorder;
     private BaggageXmlService rabbitSerializer;
@@ -23,13 +23,13 @@ public class BaggageOutput {
     private Logger logger = Logger.getLogger(BaggageOutput.class);
 
     public BaggageOutput() {
-        rabbitMQ = new RabbitMQ("baggageOutputQueue");
+        rabbitMQOut = new RabbitMQOut("baggageOutputQueue");
         initialize();
         rabbitSerializer = new BaggageXmlService();
     }
 
     public BaggageOutput(String recordPath, BaggageConversionService recordSerializer, boolean record) {
-        rabbitMQ = new RabbitMQ("baggageOutputQueue");
+        rabbitMQOut = new RabbitMQOut("baggageOutputQueue");
         recorder = new RecordWriter(recordPath);
         baggageRepository = new BaggageRepository();
         baggageRecordList = new BaggageRecordList();
@@ -42,7 +42,7 @@ public class BaggageOutput {
 
     private void initialize() {
         try {
-            rabbitMQ.initialize();
+            rabbitMQOut.initialize();
             if (this.record) {
                 recorder.initialize();
             }
@@ -54,7 +54,7 @@ public class BaggageOutput {
 
     public void publish(Baggage baggage) {
         try {
-            rabbitMQ.publish(rabbitSerializer.serialize(baggage));
+            rabbitMQOut.publish(rabbitSerializer.serialize(baggage));
             baggageRepository.addBagage(baggage);
             if (this.record) {
                 baggageRecordList.add(baggage);

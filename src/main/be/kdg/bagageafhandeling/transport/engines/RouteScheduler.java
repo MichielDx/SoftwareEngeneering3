@@ -11,8 +11,7 @@ import main.be.kdg.bagageafhandeling.transport.models.enums.DelayMethod;
 import main.be.kdg.bagageafhandeling.transport.models.SensorMessage;
 import main.be.kdg.bagageafhandeling.transport.services.interfaces.ConveyorService;
 import main.be.kdg.bagageafhandeling.transport.services.route.ConveyorRepository;
-import main.be.kdg.bagageafhandeling.transport.services.route.ConveyorAPI;
-import main.be.kdg.bagageafhandeling.transport.services.route.RouteOutput;
+import main.be.kdg.bagageafhandeling.transport.services.Publisher;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -22,8 +21,8 @@ import java.util.*;
  */
 public class RouteScheduler implements Observer {
 
-    private RouteOutput routeOutput;
-    private ConveyorAPI conveyorAPI;
+    private Publisher publisher;
+    private ConveyorService conveyorAPI;
     private DelayMethod delayMethod;
     private BaggageMessageDTO result;
     private long delay;
@@ -31,13 +30,13 @@ public class RouteScheduler implements Observer {
     private Logger logger = Logger.getLogger(RouteScheduler.class);
     private ConveyorRepository conveyorRepository;
 
-    public RouteScheduler(ConveyorService conveyorService,DelayMethod delayMethod, long delay, Map<Integer,Integer> securityList) {
+    public RouteScheduler(ConveyorService conveyorService,DelayMethod delayMethod, long delay, Map<Integer,Integer> securityList, Publisher routePublisher) {
         this.delayMethod = delayMethod;
         this.securityList = securityList;
         this.delay = delay;
-        this.conveyorAPI = new ConveyorAPI(conveyorService);
+        this.conveyorAPI = conveyorService;
         this.conveyorRepository = new ConveyorRepository();
-        this.routeOutput = new RouteOutput();
+        this.publisher = routePublisher;
     }
 
 
@@ -50,26 +49,24 @@ public class RouteScheduler implements Observer {
         Conveyor originConveyor = null;
         Conveyor destinationConveyor = null;
         Conveyor currentConveyor = null;
+        logger.info("Attempting to switch baggage: " + baggage.getBaggageID() + " to conveyor :");
         try {
             if(conveyorRepository.contains(baggageMessageDTO.getConveyorID())){
                 destinationConveyor = conveyorRepository.getConveyor(baggageMessageDTO.getConveyorID());
             }else {
-                destinationConveyor = conveyorAPI.getConveyor(baggageMessageDTO.getConveyorID());
-                logger.info("Succesfully received conveyor with ID " + destinationConveyor.getConveyorID() + " from proxy");
+                destinationConveyor = conveyorAPI.fetchConveyor(baggageMessageDTO.getConveyorID());
             }
 
             if(conveyorRepository.contains(baggage.getSensorID())){
                 originConveyor = conveyorRepository.getConveyor(baggage.getSensorID());
             }else {
-                originConveyor = conveyorAPI.getConveyor(baggage.getSensorID());
-                logger.info("Succesfully received conveyor with ID " + originConveyor.getConveyorID() + " from proxy");
+                originConveyor = conveyorAPI.fetchConveyor(baggage.getSensorID());
             }
 
             if(conveyorRepository.contains(baggage.getConveyorID())){
                 currentConveyor = conveyorRepository.getConveyor(baggage.getConveyorID());
             }else {
-                currentConveyor = conveyorAPI.getConveyor(baggage.getConveyorID());
-                logger.info("Succesfully received conveyor with ID " + currentConveyor.getConveyorID() + " from proxy");
+                currentConveyor = conveyorAPI.fetchConveyor(baggage.getConveyorID());
             }
         } catch (APIException e) {
             destinationConveyor = null;
@@ -119,7 +116,7 @@ public class RouteScheduler implements Observer {
         new Thread(() -> {
             try {
                 Thread.sleep(sleep);
-                routeOutput.publish(new SensorMessage(baggage.getBaggageID(), baggage.getConveyorID(), new Date()));
+                publisher.publish(new SensorMessage(baggage.getBaggageID(), baggage.getConveyorID(), new Date()));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

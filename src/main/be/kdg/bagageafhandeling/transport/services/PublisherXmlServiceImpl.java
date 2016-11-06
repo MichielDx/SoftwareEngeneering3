@@ -1,4 +1,4 @@
-package main.be.kdg.bagageafhandeling.transport.services.route;
+package main.be.kdg.bagageafhandeling.transport.services;
 
 import main.be.kdg.bagageafhandeling.transport.models.SensorMessage;
 
@@ -12,20 +12,18 @@ import java.io.StringWriter;
 /**
  * Created by Michiel on 4/11/2016.
  */
-public class RouteXmlService {
+public class PublisherXmlServiceImpl {
     private JAXBContext jaxbContext;
     private Marshaller jaxbMarshaller;
-    private Unmarshaller jaxbUnmarshaller;
-    private StringReader reader;
     private StringWriter sw;
     private String xmlString;
 
-    public String serialize(SensorMessage sensorMessage) {
+    public String serialize(Object object) {
         try {
-            jaxbContext = JAXBContext.newInstance(SensorMessage.class);
+            jaxbContext = JAXBContext.newInstance(object.getClass());
             jaxbMarshaller = jaxbContext.createMarshaller();
             sw = new StringWriter();
-            jaxbMarshaller.marshal(sensorMessage, sw);
+            jaxbMarshaller.marshal(object, sw);
             xmlString = sw.toString();
 
         } catch (JAXBException e) {

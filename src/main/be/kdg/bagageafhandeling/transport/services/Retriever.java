@@ -1,6 +1,5 @@
 package main.be.kdg.bagageafhandeling.transport.services;
 
-import main.be.kdg.bagageafhandeling.transport.adapters.in.RabbitMQ;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
 import main.be.kdg.bagageafhandeling.transport.services.interfaces.MessageInputService;
 
@@ -11,11 +10,12 @@ import java.util.Observer;
  */
 public class Retriever {
     private MessageInputService rabbitMQ;
-    public   Retriever(String queueName, Observer observer){
-        rabbitMQ = new RabbitMQ(queueName);
+    public   Retriever(MessageInputService service, Observer observer){
+        rabbitMQ = service;
         rabbitMQ.addObserver(observer);
+        initialize();
     }
-    public void initialize(){
+    private void initialize(){
         try {
             rabbitMQ.initialize();
             rabbitMQ.retrieve();

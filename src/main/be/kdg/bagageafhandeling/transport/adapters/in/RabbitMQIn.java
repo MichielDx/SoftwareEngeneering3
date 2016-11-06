@@ -18,16 +18,16 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by Michiel on 2/11/2016.
  */
-public class RabbitMQ extends Observable implements MessageInputService {
+public class RabbitMQIn extends Observable implements MessageInputService {
     private final String queueName;
     JAXBContext jaxbContext;
     Unmarshaller jaxbUnmarshaller;
     private Connection connection;
     private Channel channel;
 
-    private Logger logger = Logger.getLogger(RabbitMQ.class);
+    private Logger logger = Logger.getLogger(RabbitMQIn.class);
 
-    public RabbitMQ(String queueName) {
+    public RabbitMQIn(String queueName) {
         this.queueName = queueName;
     }
 
@@ -43,9 +43,9 @@ public class RabbitMQ extends Observable implements MessageInputService {
             channel.queueDeclare(queueName, false, false, false, null);
 
         } catch (IOException | TimeoutException e) {
-            throw new MessageInputException("Unable to connect to RabbitMQ", e);
+            throw new MessageInputException("Unable to connect to RabbitMQIn", e);
         }
-        logger.info("Succesfully connected to RabbitMQ queue: " + queueName);
+        logger.info("Succesfully connected to RabbitMQIn queue: " + queueName);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class RabbitMQ extends Observable implements MessageInputService {
             channel.close();
             connection.close();
         } catch (Exception e) {
-            throw new MessageInputException("Unable to close connection to RabbitMQ", e);
+            throw new MessageInputException("Unable to close connection to RabbitMQIn", e);
         }
     }
 
@@ -69,7 +69,7 @@ public class RabbitMQ extends Observable implements MessageInputService {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
                         throws IOException {
-                    logger.info("Received message from RabbitMQ queue " + queueName);
+                    logger.info("Received message from RabbitMQIn queue " + queueName);
                     String message = new String(body, "UTF-8");
                     logger.debug("Message content: " + message);
                     try {
@@ -81,13 +81,13 @@ public class RabbitMQ extends Observable implements MessageInputService {
                         setChanged();
                         notifyObservers(messageDTO);
                     } catch (Exception e) {
-                        throw new IOException("Error during conversion from RabbitMQ message to BaggageMessageDTO", e);
+                        throw new IOException("Error during conversion from RabbitMQIn message to BaggageMessageDTO", e);
                     }
                 }
             };
             channel.basicConsume(queueName, true, consumer);
         } catch (IOException e) {
-            throw new MessageInputException("Unable to retrieve message from RabbitMQ", e);
+            throw new MessageInputException("Unable to retrieve message from RabbitMQIn", e);
         }
 
     }

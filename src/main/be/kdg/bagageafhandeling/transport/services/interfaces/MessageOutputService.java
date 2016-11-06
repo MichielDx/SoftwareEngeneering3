@@ -15,6 +15,8 @@ public interface MessageOutputService {
      */
     void initialize() throws MessageOutputException;
 
+    void publish(String message) throws MessageOutputException;
+
 
     /**
      * Close all connections to this service

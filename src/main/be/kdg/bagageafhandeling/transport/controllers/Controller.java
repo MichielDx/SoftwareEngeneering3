@@ -1,6 +1,5 @@
 package main.be.kdg.bagageafhandeling.transport.controllers;
 
-import main.be.kdg.bagageafhandeling.transport.adapters.in.ConveyorServiceAPI;
 import main.be.kdg.bagageafhandeling.transport.engines.BaggageScheduler;
 import main.be.kdg.bagageafhandeling.transport.engines.DayScheduler;
 import main.be.kdg.bagageafhandeling.transport.engines.RouteScheduler;
@@ -9,7 +8,11 @@ import main.be.kdg.bagageafhandeling.transport.models.enums.FormatOption;
 import main.be.kdg.bagageafhandeling.transport.models.enums.SimulatorMode;
 import main.be.kdg.bagageafhandeling.transport.models.FrequencySchedule;
 import main.be.kdg.bagageafhandeling.transport.models.TimePeriod;
+import main.be.kdg.bagageafhandeling.transport.services.Publisher;
 import main.be.kdg.bagageafhandeling.transport.services.Retriever;
+import main.be.kdg.bagageafhandeling.transport.services.interfaces.ConveyorService;
+import main.be.kdg.bagageafhandeling.transport.services.interfaces.MessageInputService;
+import main.be.kdg.bagageafhandeling.transport.services.interfaces.MessageOutputService;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.File;
@@ -33,7 +36,9 @@ public class Controller {
     private SimulatorMode mode;
     private DelayMethod method;
     private String recordPath;
-    private Retriever routeInputQueue;
+    private ConveyorService conveyorService;
+    private MessageInputService routeInputQueue;
+    private MessageOutputService sensorOutputQueue;
 
     public Controller(){
     }
@@ -41,11 +46,11 @@ public class Controller {
     public void initialize(){
         f = getFrequencySchedule();
         PropertyConfigurator.configure(path);
+        Publisher sensorMessagePublisher = new Publisher(sensorOutputQueue);
         this.dayScheduler = new DayScheduler(f);
         baggageScheduler = new BaggageScheduler(f.getCurrentTimePeriod(),recordPath,option,mode);
-        routeScheduler = new RouteScheduler(new ConveyorServiceAPI(),method,2000,getSecurityList());
-        routeInputQueue = new Retriever("routeOutputQueue",routeScheduler);
-        routeInputQueue.initialize();
+        routeScheduler = new RouteScheduler(conveyorService,method,2000,getSecurityList(),sensorMessagePublisher);
+        Retriever routeInputRetriever = new Retriever(routeInputQueue ,routeScheduler);
         dayScheduler = new DayScheduler(f);
         day = new Thread(dayScheduler);
         bagage = new Thread(baggageScheduler);
@@ -74,6 +79,18 @@ public class Controller {
         this.recordPath = recordPath;
     }
 
+    public void setConveyorService(ConveyorService conveyorService) {
+        this.conveyorService = conveyorService;
+    }
+
+    public void setRouteInputQueue(MessageInputService routeInputQueue) {
+        this.routeInputQueue = routeInputQueue;
+    }
+
+    public void setSensorOutputQueue(MessageOutputService sensorOutputQueue) {
+        this.sensorOutputQueue = sensorOutputQueue;
+    }
+
     private Map<Integer,Integer> getSecurityList(){
         Map<Integer,Integer> hashMap = new HashMap<>();
         return hashMap;
@@ -90,4 +107,6 @@ public class Controller {
         periods.add(new TimePeriod(20, 24, 4000));
         return new FrequencySchedule(periods);
     }
+
+
 }

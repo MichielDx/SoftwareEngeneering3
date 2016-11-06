@@ -13,15 +13,15 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by Michiel on 2/11/2016.
  */
-public class RabbitMQ implements MessageOutputService {
+public class RabbitMQOut implements MessageOutputService {
     private final String queueName;
 
     private Connection connection;
     private Channel channel;
 
-    private Logger logger = Logger.getLogger(RabbitMQ.class);
+    private Logger logger = Logger.getLogger(RabbitMQOut.class);
 
-    public RabbitMQ(String queueName) {
+    public RabbitMQOut(String queueName) {
         this.queueName = queueName;
     }
 
@@ -37,9 +37,9 @@ public class RabbitMQ implements MessageOutputService {
             channel.queueDeclare(queueName, false, false, false, null);
 
         } catch (IOException | TimeoutException e) {
-            throw new MessageOutputException("Unable to connect to RabbitMQ",e);
+            throw new MessageOutputException("Unable to connect to RabbitMQIn",e);
         }
-        logger.info("Succesfully connected to RabbitMQ queue: " + queueName);
+        logger.info("Succesfully connected to RabbitMQIn queue: " + queueName);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class RabbitMQ implements MessageOutputService {
             channel.close();
             connection.close();
         } catch (Exception e) {
-            throw new MessageOutputException("Unable to close connection to RabbitMQ",e);
+            throw new MessageOutputException("Unable to close connection to RabbitMQIn",e);
         }
     }
 
@@ -56,9 +56,9 @@ public class RabbitMQ implements MessageOutputService {
     public void publish(String message) throws MessageOutputException {
         try {
             channel.basicPublish("", queueName, null, message.getBytes());
-            logger.info("Succesfully published message to RabbitMQ queue: " + queueName);
+            logger.info("Succesfully published message to RabbitMQIn queue: " + queueName);
         } catch (IOException e) {
-            throw new MessageOutputException("Unable to publish message to RabbitMQ queue: " + queueName,e);
+            throw new MessageOutputException("Unable to publish message to RabbitMQIn queue: " + queueName,e);
         }
     }
 }
