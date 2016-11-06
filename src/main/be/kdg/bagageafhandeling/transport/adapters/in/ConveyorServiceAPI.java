@@ -14,14 +14,14 @@ import java.io.IOException;
 /**
  * Created by Michiel on 4/11/2016.
  */
-public class ConveyorServiceProxy implements ConveyorService {
+public class ConveyorServiceAPI implements ConveyorService {
     private ConveyorService conveyorService;
     private Retrofit retrofit;
     private Conveyor conveyor;
-    private be.kdg.se3.proxy.ConveyorServiceProxy conveyorServiceProxy;
+    private ConveyorServiceProxy conveyorServiceProxy;
     private Gson gson;
 
-    public ConveyorServiceProxy() {
+    public ConveyorServiceAPI() {
         conveyorServiceProxy = new be.kdg.se3.proxy.ConveyorServiceProxy();
         gson = new Gson();
        /* retrofit = new Retrofit.Builder().baseUrl("http://www.services4se3.com/")

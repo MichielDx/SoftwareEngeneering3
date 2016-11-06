@@ -1,6 +1,6 @@
 package main.be.kdg.bagageafhandeling.transport.controllers;
 
-import main.be.kdg.bagageafhandeling.transport.adapters.in.ConveyorServiceProxy;
+import main.be.kdg.bagageafhandeling.transport.adapters.in.ConveyorServiceAPI;
 import main.be.kdg.bagageafhandeling.transport.engines.BaggageScheduler;
 import main.be.kdg.bagageafhandeling.transport.engines.DayScheduler;
 import main.be.kdg.bagageafhandeling.transport.engines.RouteScheduler;
@@ -43,7 +43,7 @@ public class Controller {
         PropertyConfigurator.configure(path);
         this.dayScheduler = new DayScheduler(f);
         baggageScheduler = new BaggageScheduler(f.getCurrentTimePeriod(),recordPath,option,mode);
-        routeScheduler = new RouteScheduler(new ConveyorServiceProxy(),method,2000,getSecurityList());
+        routeScheduler = new RouteScheduler(new ConveyorServiceAPI(),method,2000,getSecurityList());
         routeInputQueue = new Retriever("routeOutputQueue",routeScheduler);
         dayScheduler = new DayScheduler(f);
         day = new Thread(dayScheduler);

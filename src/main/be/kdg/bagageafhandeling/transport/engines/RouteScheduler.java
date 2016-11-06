@@ -3,7 +3,6 @@ package main.be.kdg.bagageafhandeling.transport.engines;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.Baggage;
 import main.be.kdg.bagageafhandeling.transport.models.dto.BaggageMessageDTO;
 import main.be.kdg.bagageafhandeling.transport.services.bagage.BaggageRepository;
-import main.be.kdg.bagageafhandeling.transport.adapters.in.ConveyorServiceProxy;
 import main.be.kdg.bagageafhandeling.transport.exceptions.APIException;
 import main.be.kdg.bagageafhandeling.transport.models.conveyor.Connector;
 import main.be.kdg.bagageafhandeling.transport.models.conveyor.Conveyor;
