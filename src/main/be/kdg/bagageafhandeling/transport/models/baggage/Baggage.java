@@ -1,4 +1,4 @@
-package main.be.kdg.bagageafhandeling.transport.models.bagage;
+package main.be.kdg.bagageafhandeling.transport.models.baggage;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by Michiel on 2/11/2016.
  */
 @XmlRootElement
-public class Bagage {
+public class Baggage {
     private int bagageID;
     private int flightID;
     private int conveyorID;
@@ -17,10 +17,10 @@ public class Bagage {
     private Date timestamp;
     private static final AtomicInteger count = new AtomicInteger(0);
 
-    public Bagage() {
+    public Baggage() {
     }
 
-    public Bagage(int flightID, int conveyorID, int sensorID) {
+    public Baggage(int flightID, int conveyorID, int sensorID) {
         this.bagageID = count.incrementAndGet();
         this.flightID = flightID;
         this.conveyorID = conveyorID;
@@ -28,7 +28,7 @@ public class Bagage {
         this.timestamp = new Date();
     }
     @XmlElement
-    public int getBagageID() {
+    public int getBaggageID() {
         return bagageID;
     }
     @XmlElement

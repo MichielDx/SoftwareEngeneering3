@@ -6,24 +6,25 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Created by Michiel on 3/11/2016.
  */
-@XmlRootElement(name="route")
-public class BagageMessageDTO {
+
+@XmlRootElement(name="baggage")
+public class BaggageMessageDTO {
     @XmlElement
-    private int bagageID;
+    private int baggageID;
     @XmlElement
     private int conveyorID;
 
-    public BagageMessageDTO() {
+    public BaggageMessageDTO() {
         
     }
 
-    public BagageMessageDTO(int bagageID, int conveyorID) {
-        this.bagageID = bagageID;
+    public BaggageMessageDTO(int baggageID, int conveyorID) {
+        this.baggageID = baggageID;
         this.conveyorID = conveyorID;
     }
 
-    public int getBagageID() {
-        return bagageID;
+    public int getBaggageID() {
+        return baggageID;
     }
 
     public int getConveyorID() {
@@ -32,7 +33,7 @@ public class BagageMessageDTO {
 
     @Override
     public String toString() {
-        return "BagageId: " + bagageID + " | " + "ConveyorID " + conveyorID;
+        return "BagageId: " + baggageID + " | " + "ConveyorID " + conveyorID;
     }
 }
 

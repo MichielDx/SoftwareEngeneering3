@@ -2,7 +2,7 @@ package main.be.kdg.bagageafhandeling.transport.adapters.in;
 
 import com.rabbitmq.client.*;
 import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
-import main.be.kdg.bagageafhandeling.transport.models.dto.BagageMessageDTO;
+import main.be.kdg.bagageafhandeling.transport.models.dto.BaggageMessageDTO;
 import main.be.kdg.bagageafhandeling.transport.services.interfaces.MessageInputService;
 import org.apache.log4j.Logger;
 
@@ -73,15 +73,15 @@ public class RabbitMQ extends Observable implements MessageInputService {
                     String message = new String(body, "UTF-8");
                     logger.debug("Message content: " + message);
                     try {
-                        jaxbContext = JAXBContext.newInstance(BagageMessageDTO.class);
+                        jaxbContext = JAXBContext.newInstance(BaggageMessageDTO.class);
                         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
                         Reader reader = new StringReader(message);
-                        BagageMessageDTO messageDTO = null;
-                        messageDTO = (BagageMessageDTO) jaxbUnmarshaller.unmarshal(reader);
+                        BaggageMessageDTO messageDTO = null;
+                        messageDTO = (BaggageMessageDTO) jaxbUnmarshaller.unmarshal(reader);
                         setChanged();
                         notifyObservers(messageDTO);
                     } catch (Exception e) {
-                        throw new IOException("Error during conversion from RabbitMQ message to BagageMessageDTO", e);
+                        throw new IOException("Error during conversion from RabbitMQ message to BaggageMessageDTO", e);
                     }
                 }
             };

@@ -1,6 +1,6 @@
 package main.be.kdg.bagageafhandeling.transport.controllers;
 
-import main.be.kdg.bagageafhandeling.transport.engines.BagageScheduler;
+import main.be.kdg.bagageafhandeling.transport.engines.BaggageScheduler;
 import main.be.kdg.bagageafhandeling.transport.engines.DayScheduler;
 import main.be.kdg.bagageafhandeling.transport.engines.RouteScheduler;
 import main.be.kdg.bagageafhandeling.transport.models.enums.DelayMethod;
@@ -23,7 +23,7 @@ public class Controller {
     //private String log4jConfPath = "C:\\Users\\Arthur Haelterman\\SoftwareEngineering3\\src\\main\\log4j.properties";
     private FrequencySchedule f;
     private DayScheduler dayScheduler;
-    private BagageScheduler bagageScheduler;
+    private BaggageScheduler baggageScheduler;
     private RouteScheduler routeScheduler;
     private Thread day;
     private Thread bagage;
@@ -39,11 +39,11 @@ public class Controller {
         f = getFrequencySchedule();
         PropertyConfigurator.configure(path);
         this.dayScheduler = new DayScheduler(f);
-        bagageScheduler = new BagageScheduler(f.getCurrentTimePeriod(),recordPath,option,mode);
+        baggageScheduler = new BaggageScheduler(f.getCurrentTimePeriod(),recordPath,option,mode);
         routeScheduler = new RouteScheduler(method,2000,getSecurityList());
         dayScheduler = new DayScheduler(f);
         day = new Thread(dayScheduler);
-        bagage = new Thread(bagageScheduler);
+        bagage = new Thread(baggageScheduler);
     }
 
 

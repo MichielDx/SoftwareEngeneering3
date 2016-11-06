@@ -2,14 +2,14 @@ package main.be.kdg.bagageafhandeling.transport.engines;
 
 import main.be.kdg.bagageafhandeling.transport.exceptions.EndReplayException;
 import main.be.kdg.bagageafhandeling.transport.models.*;
-import main.be.kdg.bagageafhandeling.transport.models.bagage.Bagage;
-import main.be.kdg.bagageafhandeling.transport.models.dto.BagageRecordDTO;
+import main.be.kdg.bagageafhandeling.transport.models.baggage.Baggage;
+import main.be.kdg.bagageafhandeling.transport.models.dto.BaggageRecordDTO;
 import main.be.kdg.bagageafhandeling.transport.models.enums.FormatOption;
 import main.be.kdg.bagageafhandeling.transport.models.enums.SimulatorMode;
-import main.be.kdg.bagageafhandeling.transport.services.bagage.BagageInput;
-import main.be.kdg.bagageafhandeling.transport.services.bagage.BagageJsonService;
-import main.be.kdg.bagageafhandeling.transport.services.bagage.BagageOutput;
-import main.be.kdg.bagageafhandeling.transport.services.bagage.BagageXmlService;
+import main.be.kdg.bagageafhandeling.transport.services.bagage.BaggageInput;
+import main.be.kdg.bagageafhandeling.transport.services.bagage.BaggageJsonService;
+import main.be.kdg.bagageafhandeling.transport.services.bagage.BaggageOutput;
+import main.be.kdg.bagageafhandeling.transport.services.bagage.BaggageXmlService;
 import main.be.kdg.bagageafhandeling.transport.services.gen.ConveyerIdGeneratorImpl;
 import main.be.kdg.bagageafhandeling.transport.services.gen.FlightIdGeneratorImpl;
 import main.be.kdg.bagageafhandeling.transport.services.gen.SensorIdGeneratorImpl;
@@ -23,28 +23,28 @@ import java.util.Observer;
 /**
  * Created by Michiel on 2/11/2016.
  */
-public class BagageScheduler implements Runnable, Observer {
+public class BaggageScheduler implements Runnable, Observer {
     private IdGeneratorService flightIdGen;
     private IdGeneratorService conveyerIdGen;
     private IdGeneratorService sensorIdGen;
     private TimePeriod timePeriod;
-    private Bagage bagage;
+    private Baggage baggage;
     private long frequency;
-    private BagageOutput bagageOutput;
-    private BagageInput bagageInput;
+    private BaggageOutput baggageOutput;
+    private BaggageInput baggageInput;
     private SimulatorMode mode;
     private volatile boolean running = true;
-    private Logger logger = Logger.getLogger(BagageScheduler.class);
+    private Logger logger = Logger.getLogger(BaggageScheduler.class);
 
-    public BagageScheduler(TimePeriod timePeriod) {
+    public BaggageScheduler(TimePeriod timePeriod) {
         flightIdGen = new FlightIdGeneratorImpl();
         conveyerIdGen = new ConveyerIdGeneratorImpl();
         sensorIdGen = new SensorIdGeneratorImpl();
         this.timePeriod = timePeriod;
-        bagageOutput = new BagageOutput();
+        baggageOutput = new BaggageOutput();
     }
 
-    public BagageScheduler(TimePeriod timePeriod, String recordPath, FormatOption option, SimulatorMode mode) {
+    public BaggageScheduler(TimePeriod timePeriod, String recordPath, FormatOption option, SimulatorMode mode) {
         flightIdGen = new FlightIdGeneratorImpl();
         conveyerIdGen = new ConveyerIdGeneratorImpl();
         sensorIdGen = new SensorIdGeneratorImpl();
@@ -59,17 +59,17 @@ public class BagageScheduler implements Runnable, Observer {
 
     private void initializeGeneration(String recordPath, FormatOption formatOption) {
         if (formatOption == FormatOption.JSON)
-            bagageOutput = new BagageOutput(recordPath, new BagageJsonService(), true);
-        else bagageOutput = new BagageOutput(recordPath, new BagageXmlService(), true);
+            baggageOutput = new BaggageOutput(recordPath, new BaggageJsonService(), true);
+        else baggageOutput = new BaggageOutput(recordPath, new BaggageXmlService(), true);
     }
 
     private void initializeReplay(String recordPath, FormatOption formatOption) {
         if (formatOption == FormatOption.JSON) {
-            bagageInput = new BagageInput(recordPath, new BagageJsonService());
+            baggageInput = new BaggageInput(recordPath, new BaggageJsonService());
         } else {
-            bagageInput = new BagageInput(recordPath, new BagageXmlService());
+            baggageInput = new BaggageInput(recordPath, new BaggageXmlService());
         }
-        bagageOutput = new BagageOutput();
+        baggageOutput = new BaggageOutput();
     }
 
     @Override
@@ -78,8 +78,8 @@ public class BagageScheduler implements Runnable, Observer {
         while (running) {
             try {
                 setParameters();
-                bagageOutput.publish(bagage);
-                logger.info(String.format("Created bagage with ID %d at %s", bagage.getBagageID(), sdf.format(bagage.getTimestamp())));
+                baggageOutput.publish(baggage);
+                logger.info(String.format("Created baggage with ID %d at %s", baggage.getBaggageID(), sdf.format(baggage.getTimestamp())));
                 try {
                     Thread.sleep(frequency);
                 } catch (InterruptedException e) {
@@ -96,19 +96,19 @@ public class BagageScheduler implements Runnable, Observer {
 
     private void setParameters() throws EndReplayException {
         if (mode == SimulatorMode.GENERATION) {
-            bagage = new Bagage(flightIdGen.getId(), conveyerIdGen.getId(), sensorIdGen.getId());
+            baggage = new Baggage(flightIdGen.getId(), conveyerIdGen.getId(), sensorIdGen.getId());
             frequency = timePeriod.getFrequency();
         } else {
-            BagageRecordDTO bagageRecordDTO = bagageInput.getNextBagage();
-            bagage = bagageRecordDTO.getBagage();
-            frequency = bagageRecordDTO.getFrequency();
+            BaggageRecordDTO baggageRecordDTO = baggageInput.getNextBagage();
+            baggage = baggageRecordDTO.getBaggage();
+            frequency = baggageRecordDTO.getFrequency();
         }
     }
 
     @Override
     public void update(Observable o, Object arg) {
         if (arg == null) {
-            bagageOutput.write();
+            baggageOutput.write();
         } else {
             this.timePeriod = ((TimePeriod) arg);
         }
