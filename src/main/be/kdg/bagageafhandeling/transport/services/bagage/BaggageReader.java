@@ -6,20 +6,20 @@ import main.be.kdg.bagageafhandeling.transport.exceptions.RecordReaderException;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.Baggage;
 import main.be.kdg.bagageafhandeling.transport.models.dto.BaggageRecordDTO;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.BaggageRecordList;
-import main.be.kdg.bagageafhandeling.transport.services.interfaces.BaggageConversionService;
+import main.be.kdg.bagageafhandeling.transport.services.interfaces.RecorderConversionService;
 import org.apache.log4j.Logger;
 
 /**
  * Created by Michiel on 3/11/2016.
  */
-public class BaggageInput {
+public class BaggageReader {
     private RecordReader recordReader;
-    private BaggageConversionService recordDeserializer;
+    private RecorderConversionService recordDeserializer;
     private BaggageRecordList baggageRecordList;
     private String result;
-    private Logger logger = Logger.getLogger(BaggageInput.class);
+    private Logger logger = Logger.getLogger(BaggageReader.class);
 
-    public BaggageInput(String path, BaggageConversionService baggageConversionService) {
+    public BaggageReader(String path, RecorderConversionService baggageConversionService) {
         recordReader = new RecordReader(path);
         recordDeserializer = baggageConversionService;
         initialize();

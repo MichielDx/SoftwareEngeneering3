@@ -52,7 +52,6 @@ public class RouteScheduler implements Observer {
         } catch (RepositoryException e) {
             e.getMessage();
         }
-
         long timedifference = System.currentTimeMillis() - baggage.getTimestamp().getTime();
         Conveyor originConveyor = null;
         Conveyor destinationConveyor = null;

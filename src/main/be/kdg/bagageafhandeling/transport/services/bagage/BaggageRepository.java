@@ -16,7 +16,7 @@ public class BaggageRepository {
         baggages = new ConcurrentHashMap<>();
     }
 
-    public void addBagage(Baggage baggage) {
+    public  static void addBagage(Baggage baggage) {
         baggages.put(baggage.getBaggageID(),baggage);
     }
 

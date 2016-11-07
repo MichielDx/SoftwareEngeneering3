@@ -4,12 +4,9 @@ import main.be.kdg.bagageafhandeling.transport.exceptions.EndReplayException;
 import main.be.kdg.bagageafhandeling.transport.models.*;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.Baggage;
 import main.be.kdg.bagageafhandeling.transport.models.dto.BaggageRecordDTO;
-import main.be.kdg.bagageafhandeling.transport.models.enums.FormatOption;
 import main.be.kdg.bagageafhandeling.transport.models.enums.SimulatorMode;
-import main.be.kdg.bagageafhandeling.transport.services.bagage.BaggageInput;
-import main.be.kdg.bagageafhandeling.transport.services.bagage.BaggageJsonService;
-import main.be.kdg.bagageafhandeling.transport.services.bagage.BaggageOutput;
-import main.be.kdg.bagageafhandeling.transport.services.bagage.BaggageXmlService;
+import main.be.kdg.bagageafhandeling.transport.services.Publisher;
+import main.be.kdg.bagageafhandeling.transport.services.bagage.*;
 import main.be.kdg.bagageafhandeling.transport.services.gen.ConveyerIdGeneratorImpl;
 import main.be.kdg.bagageafhandeling.transport.services.gen.FlightIdGeneratorImpl;
 import main.be.kdg.bagageafhandeling.transport.services.gen.SensorIdGeneratorImpl;
@@ -30,47 +27,24 @@ public class BaggageScheduler implements Runnable, Observer {
     private TimePeriod timePeriod;
     private Baggage baggage;
     private long frequency;
-    private BaggageOutput baggageOutput;
-    private BaggageInput baggageInput;
+    private BaggageReader baggageReader;
+    private BaggageRecorder baggageRecorder;
     private SimulatorMode mode;
     private volatile boolean running = true;
     private Logger logger = Logger.getLogger(BaggageScheduler.class);
+    private Publisher baggagePublisher;
 
-    public BaggageScheduler(TimePeriod timePeriod) {
-        flightIdGen = new FlightIdGeneratorImpl();
-        conveyerIdGen = new ConveyerIdGeneratorImpl();
-        sensorIdGen = new SensorIdGeneratorImpl();
-        this.timePeriod = timePeriod;
-        baggageOutput = new BaggageOutput();
-    }
-
-    public BaggageScheduler(TimePeriod timePeriod, String recordPath, FormatOption option, SimulatorMode mode) {
+    public BaggageScheduler(Publisher baggagePublisher, TimePeriod timePeriod, SimulatorMode mode, BaggageRecorder baggageRecorder, BaggageReader baggageReader) {
         flightIdGen = new FlightIdGeneratorImpl();
         conveyerIdGen = new ConveyerIdGeneratorImpl();
         sensorIdGen = new SensorIdGeneratorImpl();
         this.timePeriod = timePeriod;
         this.mode = mode;
-        if (this.mode == SimulatorMode.GENERATION) {
-            initializeGeneration(recordPath, option);
-        } else {
-            initializeReplay(recordPath, option);
-        }
+        this.baggageRecorder = baggageRecorder;
+        this.baggageReader = baggageReader;
+        this.baggagePublisher = baggagePublisher;
     }
 
-    private void initializeGeneration(String recordPath, FormatOption formatOption) {
-        if (formatOption == FormatOption.JSON)
-            baggageOutput = new BaggageOutput(recordPath, new BaggageJsonService(), true);
-        else baggageOutput = new BaggageOutput(recordPath, new BaggageXmlService(), true);
-    }
-
-    private void initializeReplay(String recordPath, FormatOption formatOption) {
-        if (formatOption == FormatOption.JSON) {
-            baggageInput = new BaggageInput(recordPath, new BaggageJsonService());
-        } else {
-            baggageInput = new BaggageInput(recordPath, new BaggageXmlService());
-        }
-        baggageOutput = new BaggageOutput();
-    }
 
     @Override
     public void run() {
@@ -78,7 +52,9 @@ public class BaggageScheduler implements Runnable, Observer {
         while (running) {
             try {
                 setParameters();
-                baggageOutput.publish(baggage);
+                baggagePublisher.publish(baggage);
+                if (mode == SimulatorMode.GENERATION) baggageRecorder.record(baggage);
+                BaggageRepository.addBagage(baggage);
                 logger.info(String.format("Created and published baggage with ID %d at %s", baggage.getBaggageID(), sdf.format(baggage.getTimestamp())));
                 try {
                     Thread.sleep(frequency);
@@ -99,7 +75,7 @@ public class BaggageScheduler implements Runnable, Observer {
             baggage = new Baggage(flightIdGen.getId(), conveyerIdGen.getId(), sensorIdGen.getId());
             frequency = timePeriod.getFrequency();
         } else {
-            BaggageRecordDTO baggageRecordDTO = baggageInput.getNextBagage();
+            BaggageRecordDTO baggageRecordDTO = baggageReader.getNextBagage();
             baggage = baggageRecordDTO.getBaggage();
             frequency = baggageRecordDTO.getFrequency();
         }
@@ -108,7 +84,7 @@ public class BaggageScheduler implements Runnable, Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (arg == null) {
-            baggageOutput.write();
+           if (mode == SimulatorMode.GENERATION) baggageRecorder.write();
         } else {
             this.timePeriod = ((TimePeriod) arg);
         }

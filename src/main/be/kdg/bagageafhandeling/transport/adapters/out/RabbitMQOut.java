@@ -37,7 +37,7 @@ public class RabbitMQOut implements MessageOutputService {
             channel.queueDeclare(queueName, false, false, false, null);
 
         } catch (IOException | TimeoutException e) {
-            throw new MessageOutputException("Unable to connect to RabbitMQIn",e);
+            throw new MessageOutputException("Unable to connect to RabbitMQOut",e);
         }
         logger.info("Succesfully connected to RabbitMQIn queue: " + queueName);
     }
@@ -48,7 +48,7 @@ public class RabbitMQOut implements MessageOutputService {
             channel.close();
             connection.close();
         } catch (Exception e) {
-            throw new MessageOutputException("Unable to close connection to RabbitMQIn",e);
+            throw new MessageOutputException("Unable to close connection to RabbitMQOut",e);
         }
     }
 
@@ -57,7 +57,7 @@ public class RabbitMQOut implements MessageOutputService {
         try {
             channel.basicPublish("", queueName, null, message.getBytes());
         } catch (IOException e) {
-            throw new MessageOutputException("Unable to publish message to RabbitMQIn queue: " + queueName,e);
+            throw new MessageOutputException("Unable to publish message to RabbitMQOut queue: " + queueName,e);
         }
     }
 }

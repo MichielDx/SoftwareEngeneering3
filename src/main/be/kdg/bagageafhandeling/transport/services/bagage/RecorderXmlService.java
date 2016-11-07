@@ -2,7 +2,7 @@ package main.be.kdg.bagageafhandeling.transport.services.bagage;
 
 import main.be.kdg.bagageafhandeling.transport.models.baggage.Baggage;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.BaggageRecordList;
-import main.be.kdg.bagageafhandeling.transport.services.interfaces.BaggageConversionService;
+import main.be.kdg.bagageafhandeling.transport.services.interfaces.RecorderConversionService;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -14,7 +14,7 @@ import java.io.StringWriter;
 /**
  * Created by Michiel on 2/11/2016.
  */
-public class BaggageXmlService implements BaggageConversionService {
+public class RecorderXmlService implements RecorderConversionService {
     private JAXBContext jaxbContext;
     private Marshaller jaxbMarshaller;
     private Unmarshaller jaxbUnmarshaller;
@@ -22,19 +22,6 @@ public class BaggageXmlService implements BaggageConversionService {
     private StringWriter sw;
     private String xmlString;
 
-    public String serialize(Baggage baggage) {
-        try {
-            jaxbContext = JAXBContext.newInstance(Baggage.class);
-            jaxbMarshaller = jaxbContext.createMarshaller();
-            sw = new StringWriter();
-            jaxbMarshaller.marshal(baggage, sw);
-            xmlString = sw.toString();
-
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-        return xmlString;
-    }
 
     @Override
     public String serializeAll(BaggageRecordList bagages) {

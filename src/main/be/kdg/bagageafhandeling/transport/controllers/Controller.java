@@ -11,9 +11,11 @@ import main.be.kdg.bagageafhandeling.transport.models.TimePeriod;
 import main.be.kdg.bagageafhandeling.transport.services.Publisher;
 import main.be.kdg.bagageafhandeling.transport.services.PublisherXmlServiceImpl;
 import main.be.kdg.bagageafhandeling.transport.services.Retriever;
+import main.be.kdg.bagageafhandeling.transport.services.bagage.*;
 import main.be.kdg.bagageafhandeling.transport.services.interfaces.ConveyorService;
 import main.be.kdg.bagageafhandeling.transport.services.interfaces.MessageInputService;
 import main.be.kdg.bagageafhandeling.transport.services.interfaces.MessageOutputService;
+import main.be.kdg.bagageafhandeling.transport.services.interfaces.RecorderConversionService;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.File;
@@ -25,7 +27,7 @@ import java.util.Map;
  * Created by Arthur Haelterman on 4/11/2016.
  */
 public class Controller {
-    private String path = new File("src/main/log4j.properties").getAbsolutePath();
+    private String logpath = new File("src/main/log4j.properties").getAbsolutePath();
     //private String log4jConfPath = "C:\\Users\\Arthur Haelterman\\SoftwareEngineering3\\src\\main\\log4j.properties";
     private FrequencySchedule f;
     private DayScheduler dayScheduler;
@@ -40,28 +42,54 @@ public class Controller {
     private ConveyorService conveyorService;
     private MessageInputService routeInputQueue;
     private MessageOutputService sensorOutputQueue;
+    private MessageOutputService baggageOutputQueue;
+    private BaggageRepository bagageRepository;
+    private BaggageRecorder baggageRecorder;
+    private BaggageReader baggageReader;
 
-    public Controller(){
+
+    public Controller() {
     }
 
-    public void initialize(){
+    public void initialize() {
+        bagageRepository = new BaggageRepository();
+
         f = getFrequencySchedule();
-        PropertyConfigurator.configure(path);
+        PropertyConfigurator.configure(logpath);
+
+        initializeRecorderAndReader();
+
         PublisherXmlServiceImpl publisherXmlService = new PublisherXmlServiceImpl();
         Publisher sensorMessagePublisher = new Publisher(sensorOutputQueue, publisherXmlService);
-        this.dayScheduler = new DayScheduler(f);
-        baggageScheduler = new BaggageScheduler(f.getCurrentTimePeriod(),recordPath,option,mode);
-        routeScheduler = new RouteScheduler(method,2000,getSecurityList(),conveyorService,sensorMessagePublisher);
-        Retriever routeInputRetriever = new Retriever(routeInputQueue ,routeScheduler);
+        Publisher baggagePublisher = new Publisher(baggageOutputQueue, publisherXmlService);
+
+        baggageScheduler = new BaggageScheduler(baggagePublisher, f.getCurrentTimePeriod(), mode, baggageRecorder, baggageReader);
+        routeScheduler = new RouteScheduler(method, 2000, getSecurityList(), conveyorService, sensorMessagePublisher);
         dayScheduler = new DayScheduler(f);
+        Retriever routeInputRetriever = new Retriever(routeInputQueue, routeScheduler);
+
         day = new Thread(dayScheduler);
         bagage = new Thread(baggageScheduler);
     }
 
-
-    public void start(){
+    public void start() {
         day.start();
         bagage.start();
+    }
+
+    private void initializeRecorderAndReader() {
+        RecorderConversionService service;
+        if (option == FormatOption.JSON) {
+            service = new RecorderJsonService();
+            baggageRecorder = new BaggageRecorder(recordPath, service);
+            baggageReader = new BaggageReader(recordPath, service);
+        }
+        else{
+            service = new RecorderXmlService();
+            baggageRecorder = new BaggageRecorder(recordPath, service);
+            baggageReader = new BaggageReader(recordPath, service);
+        }
+
     }
 
 
@@ -93,13 +121,17 @@ public class Controller {
         this.sensorOutputQueue = sensorOutputQueue;
     }
 
-    private Map<Integer,Integer> getSecurityList(){
-        Map<Integer,Integer> hashMap = new HashMap<>();
+    public void setBaggageOutputQueue(MessageOutputService baggageOutputQueue) {
+        this.baggageOutputQueue = baggageOutputQueue;
+    }
+
+    private Map<Integer, Integer> getSecurityList() {
+        Map<Integer, Integer> hashMap = new HashMap<>();
         return hashMap;
     }
 
 
-    private FrequencySchedule getFrequencySchedule(){
+    private FrequencySchedule getFrequencySchedule() {
         ArrayList<TimePeriod> periods = new ArrayList<>();
         periods.add(new TimePeriod(0, 2, 5000));
         periods.add(new TimePeriod(2, 6, 10000));

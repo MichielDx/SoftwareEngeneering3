@@ -3,15 +3,15 @@ package main.be.kdg.bagageafhandeling.transport.services.bagage;
 
 import com.google.gson.Gson;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.BaggageRecordList;
-import main.be.kdg.bagageafhandeling.transport.services.interfaces.BaggageConversionService;
+import main.be.kdg.bagageafhandeling.transport.services.interfaces.RecorderConversionService;
 
 /**
  * Created by Arthur Haelterman on 3/11/2016.
  */
-public class BaggageJsonService implements BaggageConversionService {
+public class RecorderJsonService implements RecorderConversionService {
     Gson gson;
 
-    public BaggageJsonService(){
+    public RecorderJsonService(){
         gson = new Gson();
     }
 

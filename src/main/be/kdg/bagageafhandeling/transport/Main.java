@@ -25,6 +25,7 @@ public class Main {
         controller.setMethod(DelayMethod.CALCULATED);
 
         controller.setSensorOutputQueue(new RabbitMQOut("sensorOutputQueue"));
+        controller.setBaggageOutputQueue(new RabbitMQOut("baggageOutputQueue"));
 
         controller.initialize();
 
