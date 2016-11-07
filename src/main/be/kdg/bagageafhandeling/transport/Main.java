@@ -20,12 +20,12 @@ public class Main {
         controller.setMode(SimulatorMode.GENERATION);
         controller.setOption(FormatOption.JSON);
 
-        controller.setRouteInputQueue(new RabbitMQIn("routeOutputQueue"));
+        controller.setRouteInputQueue(new RabbitMQIn("routeQueue"));
         controller.setConveyorService(new ConveyorServiceAPI());
         controller.setMethod(DelayMethod.CALCULATED);
 
-        controller.setSensorOutputQueue(new RabbitMQOut("sensorOutputQueue"));
-        controller.setBaggageOutputQueue(new RabbitMQOut("baggageOutputQueue"));
+        controller.setSensorOutputQueue(new RabbitMQOut("sensorQueue"));
+        controller.setBaggageOutputQueue(new RabbitMQOut("baggageQueue"));
 
         controller.initialize();
 

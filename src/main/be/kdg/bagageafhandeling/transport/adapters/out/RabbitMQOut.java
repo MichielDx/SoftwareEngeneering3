@@ -39,7 +39,7 @@ public class RabbitMQOut implements MessageOutputService {
         } catch (IOException | TimeoutException e) {
             throw new MessageOutputException("Unable to connect to RabbitMQOut",e);
         }
-        logger.info("Succesfully connected to RabbitMQIn queue: " + queueName);
+        logger.info("Succesfully connected to RabbitMQOut queue: " + queueName);
     }
 
     @Override
