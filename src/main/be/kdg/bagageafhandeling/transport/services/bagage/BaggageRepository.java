@@ -1,5 +1,6 @@
 package main.be.kdg.bagageafhandeling.transport.services.bagage;
 
+import main.be.kdg.bagageafhandeling.transport.exceptions.RepositoryException;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.Baggage;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,8 +24,9 @@ public class BaggageRepository {
         baggages.replace(baggage.getBaggageID(), baggage);
     }
 
-    public static Baggage getBagage(int baggageID) {
-        Baggage temp = baggages.get(baggageID);
-        return temp;
+    public static Baggage getBaggage(int baggageId) throws RepositoryException {
+        Baggage result = baggages.get(baggageId);
+        if (result == null) throw new RepositoryException("Baggage with ID " + baggageId + " not found in cache.");
+        return result;
     }
 }

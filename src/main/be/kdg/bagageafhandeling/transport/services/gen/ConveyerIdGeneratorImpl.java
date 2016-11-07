@@ -9,8 +9,8 @@ import java.util.Random;
  */
 public class ConveyerIdGeneratorImpl implements IdGeneratorService {
     private static Random rnd = new Random();
-    //private static final int[] conveyerIDs = new int[]{15, 10, 39, 70, 71, 48, 99, 96, 19, 46};
-    private static final int[] conveyerIDs = new int[]{11,12,21,22,31};
+    private static final int[] conveyerIDs = new int[]{15, 10, 39, 70, 71, 48, 99, 96, 19, 46};
+    //private static final int[] conveyerIDs = new int[]{11,12,21,22,31};
 
     @Override
     public int getId() {

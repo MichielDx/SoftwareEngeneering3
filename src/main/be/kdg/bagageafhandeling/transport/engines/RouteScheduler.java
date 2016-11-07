@@ -1,5 +1,6 @@
 package main.be.kdg.bagageafhandeling.transport.engines;
 
+import main.be.kdg.bagageafhandeling.transport.exceptions.RepositoryException;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.Baggage;
 import main.be.kdg.bagageafhandeling.transport.models.dto.BaggageMessageDTO;
 import main.be.kdg.bagageafhandeling.transport.services.bagage.BaggageRepository;
@@ -44,7 +45,14 @@ public class RouteScheduler implements Observer {
         if(securityList.containsKey(baggageMessageDTO.getBaggageID()) && securityList.containsValue(baggageMessageDTO.getConveyorID())){
             return;
         }
-        Baggage baggage = BaggageRepository.getBagage(baggageMessageDTO.getBaggageID());
+
+        Baggage baggage = null;
+        try {
+            baggage = BaggageRepository.getBaggage(baggageMessageDTO.getBaggageID());
+        } catch (RepositoryException e) {
+            e.getMessage();
+        }
+
         long timedifference = System.currentTimeMillis() - baggage.getTimestamp().getTime();
         Conveyor originConveyor = null;
         Conveyor destinationConveyor = null;
