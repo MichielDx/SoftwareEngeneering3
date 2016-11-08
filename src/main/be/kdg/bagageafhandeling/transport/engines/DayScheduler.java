@@ -2,6 +2,7 @@ package main.be.kdg.bagageafhandeling.transport.engines;
 
 import main.be.kdg.bagageafhandeling.transport.models.FrequencySchedule;
 import main.be.kdg.bagageafhandeling.transport.models.TimePeriod;
+import main.be.kdg.bagageafhandeling.transport.models.enums.SimulatorMode;
 import org.apache.log4j.Logger;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,8 @@ import java.util.Calendar;
 import java.util.Observable;
 
 /**
- * Created by Michiel on 2/11/2016.
+ * a Dayscheduler is a thread that sleeps until the end of the current {@link TimePeriod} and notifies its observers with the next {@link TimePeriod} as an argument.
+ * If the end-hour of the current {@link TimePeriod} is midnight it notifies its observers with a null argument.
  */
 public class DayScheduler extends Observable implements Runnable {
     private FrequencySchedule schedule;

@@ -24,13 +24,13 @@ public class RecorderXmlService implements RecorderConversionService {
 
 
     @Override
-    public String serializeAll(BaggageRecordList bagages) {
+    public String serializeAll(BaggageRecordList baggages) {
         try {
             jaxbContext = JAXBContext.newInstance(BaggageRecordList.class);
             jaxbMarshaller = jaxbContext.createMarshaller();
             sw = new StringWriter();
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            jaxbMarshaller.marshal(bagages, sw);
+            jaxbMarshaller.marshal(baggages, sw);
             xmlString = sw.toString();
 
         } catch (JAXBException e) {

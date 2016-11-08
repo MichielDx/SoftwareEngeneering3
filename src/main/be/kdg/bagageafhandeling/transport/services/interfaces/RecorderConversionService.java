@@ -3,9 +3,10 @@ package main.be.kdg.bagageafhandeling.transport.services.interfaces;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.BaggageRecordList;
 
 /**
- * Created by Arthur Haelterman on 3/11/2016.
+ * A RecorderConversionService serializes or deserializes all baggages in a BaggageRecordList to or from a certain format
  */
 public interface RecorderConversionService {
-    String serializeAll(BaggageRecordList bagages);
+    String serializeAll(BaggageRecordList baggages);
+
     BaggageRecordList deserializeAll(String string);
 }

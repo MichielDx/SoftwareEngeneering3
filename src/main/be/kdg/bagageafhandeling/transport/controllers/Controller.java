@@ -8,6 +8,8 @@ import main.be.kdg.bagageafhandeling.transport.models.enums.FormatOption;
 import main.be.kdg.bagageafhandeling.transport.models.enums.SimulatorMode;
 import main.be.kdg.bagageafhandeling.transport.models.FrequencySchedule;
 import main.be.kdg.bagageafhandeling.transport.models.TimePeriod;
+import main.be.kdg.bagageafhandeling.transport.repository.BaggageRepository;
+import main.be.kdg.bagageafhandeling.transport.repository.ConveyorRepository;
 import main.be.kdg.bagageafhandeling.transport.services.Publisher;
 import main.be.kdg.bagageafhandeling.transport.services.PublisherXmlServiceImpl;
 import main.be.kdg.bagageafhandeling.transport.services.Retriever;
@@ -19,9 +21,7 @@ import main.be.kdg.bagageafhandeling.transport.services.interfaces.RecorderConve
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Arthur Haelterman on 4/11/2016.
@@ -43,16 +43,16 @@ public class Controller {
     private MessageInputService routeInputQueue;
     private MessageOutputService sensorOutputQueue;
     private MessageOutputService baggageOutputQueue;
-    private BaggageRepository bagageRepository;
     private BaggageRecorder baggageRecorder;
     private BaggageReader baggageReader;
+    private long timeToCacheClear;
+    private boolean record;
 
 
     public Controller() {
     }
 
     public void initialize() {
-        bagageRepository = new BaggageRepository();
 
         f = getFrequencySchedule();
         PropertyConfigurator.configure(logpath);
@@ -62,14 +62,24 @@ public class Controller {
         PublisherXmlServiceImpl publisherXmlService = new PublisherXmlServiceImpl();
         Publisher sensorMessagePublisher = new Publisher(sensorOutputQueue, publisherXmlService);
         Publisher baggagePublisher = new Publisher(baggageOutputQueue, publisherXmlService);
-
-        baggageScheduler = new BaggageScheduler(baggagePublisher, f.getCurrentTimePeriod(), mode, baggageRecorder, baggageReader);
-        routeScheduler = new RouteScheduler(method, 2000, getSecurityList(), conveyorService, sensorMessagePublisher);
+        BaggageRepository baggageRepository = new BaggageRepository();
+        ConveyorRepository conveyorRepository = new ConveyorRepository();
+        baggageScheduler = new BaggageScheduler(baggageRepository, baggagePublisher, f.getCurrentTimePeriod(), mode, baggageRecorder, baggageReader);
+        routeScheduler = new RouteScheduler(baggageRepository, conveyorRepository, method, 2000, getSecurityList(), conveyorService, sensorMessagePublisher);
         dayScheduler = new DayScheduler(f);
+        dayScheduler.addObserver(baggageScheduler);
         Retriever routeInputRetriever = new Retriever(routeInputQueue, routeScheduler);
 
         day = new Thread(dayScheduler);
         bagage = new Thread(baggageScheduler);
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                conveyorRepository.clearCache();
+            }
+        }, new Date(), timeToCacheClear);
     }
 
     public void start() {
@@ -81,15 +91,11 @@ public class Controller {
         RecorderConversionService service;
         if (option == FormatOption.JSON) {
             service = new RecorderJsonService();
-            baggageRecorder = new BaggageRecorder(recordPath, service);
-            baggageReader = new BaggageReader(recordPath, service);
-        }
-        else{
+        } else {
             service = new RecorderXmlService();
-            baggageRecorder = new BaggageRecorder(recordPath, service);
-            baggageReader = new BaggageReader(recordPath, service);
         }
-
+        if (record) baggageRecorder = new BaggageRecorder(recordPath, service);
+        if (mode == SimulatorMode.REPLAY) baggageReader = new BaggageReader(recordPath, service);
     }
 
 
@@ -142,5 +148,11 @@ public class Controller {
         return new FrequencySchedule(periods);
     }
 
+    public void setClearCacheTime(long time){
+        this.timeToCacheClear =time;
+    }
 
+    public void setRecord(boolean record) {
+        this.record = record;
+    }
 }

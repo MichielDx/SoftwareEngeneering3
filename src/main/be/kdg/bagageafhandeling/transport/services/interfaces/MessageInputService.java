@@ -5,14 +5,13 @@ import main.be.kdg.bagageafhandeling.transport.exceptions.MessageInputException;
 import java.util.Observer;
 
 /**
- * Created by Michiel on 3/11/2016.
+ * A MessageInputService receives and converts a String message from a message broker
  */
 public interface MessageInputService {
     /**
      * Start up by supplying a callback object
      */
     void initialize() throws MessageInputException;
-
 
     /**
      * Close all connections to this service

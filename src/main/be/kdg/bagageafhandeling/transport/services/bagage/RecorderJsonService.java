@@ -16,8 +16,8 @@ public class RecorderJsonService implements RecorderConversionService {
     }
 
     @Override
-    public String serializeAll (BaggageRecordList bagages) {
-        return gson.toJson(bagages);
+    public String serializeAll (BaggageRecordList baggages) {
+        return gson.toJson(baggages);
     }
 
     @Override

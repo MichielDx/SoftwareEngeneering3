@@ -1,7 +1,7 @@
 package main.be.kdg.bagageafhandeling.transport.services.interfaces;
 
 /**
- * Created by Michiel on 2/11/2016.
+ * A IdGeneratorService returns a integer randomly taking from an in-memory collection
  */
 public interface IdGeneratorService {
     int getId();

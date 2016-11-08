@@ -3,7 +3,7 @@ package main.be.kdg.bagageafhandeling.transport.engines;
 import main.be.kdg.bagageafhandeling.transport.exceptions.RepositoryException;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.Baggage;
 import main.be.kdg.bagageafhandeling.transport.models.dto.BaggageMessageDTO;
-import main.be.kdg.bagageafhandeling.transport.services.bagage.BaggageRepository;
+import main.be.kdg.bagageafhandeling.transport.repository.BaggageRepository;
 import main.be.kdg.bagageafhandeling.transport.exceptions.APIException;
 import main.be.kdg.bagageafhandeling.transport.models.conveyor.Connector;
 import main.be.kdg.bagageafhandeling.transport.models.conveyor.Conveyor;
@@ -11,14 +11,17 @@ import main.be.kdg.bagageafhandeling.transport.models.conveyor.Segment;
 import main.be.kdg.bagageafhandeling.transport.models.enums.DelayMethod;
 import main.be.kdg.bagageafhandeling.transport.models.SensorMessage;
 import main.be.kdg.bagageafhandeling.transport.services.interfaces.ConveyorService;
-import main.be.kdg.bagageafhandeling.transport.services.route.ConveyorRepository;
+import main.be.kdg.bagageafhandeling.transport.repository.ConveyorRepository;
 import main.be.kdg.bagageafhandeling.transport.services.Publisher;
 import org.apache.log4j.Logger;
 
 import java.util.*;
 
 /**
- * Created by Michiel on 4/11/2016.
+ * a RouteScheduler Observes a message broker.
+ * When updated a {@link BaggageMessageDTO} object is passed as argument.
+ * A concurrent-safe thread is started to switch the baggage from his current conveyor to the next conveyor in the route
+ * After a set or calculated amount of time a {@link SensorMessage} is published containing the current conveyor the baggage is on
  */
 public class RouteScheduler implements Observer {
 
@@ -27,73 +30,72 @@ public class RouteScheduler implements Observer {
     private DelayMethod delayMethod;
     private BaggageMessageDTO result;
     private long delay;
-    private Map<Integer,Integer> securityList;
+    private Map<Integer, Integer> securityList;
     private Logger logger = Logger.getLogger(RouteScheduler.class);
     private ConveyorRepository conveyorRepository;
+    private BaggageRepository baggageRepository;
 
-    public RouteScheduler(DelayMethod delayMethod, long delay, Map<Integer,Integer> securityList,ConveyorService conveyorService, Publisher routePublisher) {
+    public RouteScheduler(BaggageRepository baggageRepository, ConveyorRepository conveyorRepository, DelayMethod delayMethod, long delay, Map<Integer, Integer> securityList, ConveyorService conveyorService, Publisher routePublisher) {
+        this.baggageRepository = baggageRepository;
         this.delayMethod = delayMethod;
         this.securityList = securityList;
         this.delay = delay;
         this.conveyorAPI = conveyorService;
-        this.conveyorRepository = new ConveyorRepository();
+        this.conveyorRepository = conveyorRepository;
         this.publisher = routePublisher;
     }
 
 
     private void doTask(BaggageMessageDTO baggageMessageDTO) {
-        if(securityList.containsKey(baggageMessageDTO.getBaggageID()) && securityList.containsValue(baggageMessageDTO.getConveyorID())){
+        if (securityList.containsKey(baggageMessageDTO.getBaggageID()) && securityList.containsValue(baggageMessageDTO.getConveyorID())) {
             return;
         }
-
         Baggage baggage = null;
         try {
-            baggage = BaggageRepository.getBaggage(baggageMessageDTO.getBaggageID());
+            baggage = baggageRepository.getBaggage(baggageMessageDTO.getBaggageID());
+            logger.info("Received RouteMessage for baggage ID = " + baggageMessageDTO.getBaggageID() + " attempting to switch baggage: to conveyor ID = " + baggageMessageDTO.getConveyorID());
+            long timedifference = System.currentTimeMillis() - baggage.getTimestamp().getTime();
+            Conveyor originConveyor = getConveyor(baggage.getSensorID());
+            Conveyor destinationConveyor = getConveyor(baggageMessageDTO.getConveyorID());
+            Conveyor currentConveyor = getConveyor(baggage.getConveyorID());
+
+            if (destinationConveyor == null || currentConveyor == null) delayMethod = DelayMethod.FIXED;
+            if (delayMethod == DelayMethod.FIXED) {
+                publish(baggage, delay);
+            } else {
+                baggage.setConveyorID(destinationConveyor.getConveyorID());
+                baggage.setSensorID(currentConveyor.getConveyorID());
+                baggageRepository.updateBagage(baggage);
+                publish(baggage, calculateDelay(destinationConveyor, currentConveyor, originConveyor, timedifference));
+            }
         } catch (RepositoryException e) {
-            e.getMessage();
+            logger.error(e.getMessage());
         }
-        long timedifference = System.currentTimeMillis() - baggage.getTimestamp().getTime();
-        Conveyor originConveyor = null;
-        Conveyor destinationConveyor = null;
-        Conveyor currentConveyor = null;
-        logger.info("Received RouteMessage for baggage ID = "  + baggage.getBaggageID() + " attempting to switch baggage: to conveyor ID = " +baggageMessageDTO.getConveyorID());
+
+
+    }
+
+    private Conveyor getConveyor(int conveyorID) {
+        Conveyor conveyor = null;
         try {
-            if(conveyorRepository.contains(baggageMessageDTO.getConveyorID())){
-                destinationConveyor = conveyorRepository.getConveyor(baggageMessageDTO.getConveyorID());
-            }else {
-                destinationConveyor = conveyorAPI.fetchConveyor(baggageMessageDTO.getConveyorID());
-            }
-
-            if(conveyorRepository.contains(baggage.getSensorID())){
-                originConveyor = conveyorRepository.getConveyor(baggage.getSensorID());
-            }else {
-                originConveyor = conveyorAPI.fetchConveyor(baggage.getSensorID());
-            }
-
-            if(conveyorRepository.contains(baggage.getConveyorID())){
-                currentConveyor = conveyorRepository.getConveyor(baggage.getConveyorID());
-            }else {
-                currentConveyor = conveyorAPI.fetchConveyor(baggage.getConveyorID());
+            if (conveyorRepository.contains(conveyorID)) {
+                conveyor = conveyorRepository.getConveyor(conveyorID);
+            } else {
+                conveyor = conveyorAPI.fetchConveyor(conveyorID);
+                conveyorRepository.addConveyor(conveyor);
             }
         } catch (APIException e) {
-            destinationConveyor = null;
-            currentConveyor = null;
+            conveyor = null;
             logger.error(e.getMessage());
             logger.error(e.getCause().getMessage());
         }
-        if (destinationConveyor == null || currentConveyor == null) delayMethod = DelayMethod.FIXED;
-        if (delayMethod == DelayMethod.FIXED) {
-            publish(baggage, delay);
-        } else {
-            baggage.setConveyorID(destinationConveyor.getConveyorID());
-            baggage.setSensorID(currentConveyor.getConveyorID());
-            BaggageRepository.updateBagage(baggage);
-            publish(baggage, calculateDelay(destinationConveyor, currentConveyor, originConveyor, timedifference));
-        }
+        return conveyor;
     }
 
-
-
+    /**
+     * @param timedifference how long the baggage has been on the current conveyor
+     * @return a calculated delay based on the length and speed of the conveyors and connectors
+     */
     private long calculateDelay(Conveyor destinationConveyor, Conveyor currentConveyor, Conveyor originConveyor, long timedifference) {
         long delayInMilliSeconds = 0;
         long conveyorCycleDuration = (currentConveyor.getLength() / currentConveyor.getSpeed()) * 1000;
@@ -111,9 +113,9 @@ public class RouteScheduler implements Observer {
         } else {
             delayInMilliSeconds += (conveyorCycleDuration - currentCycle) + durationToOutPoint;
         }
-        for(Connector connector : currentConveyor.getConnectors()){
-            if(connector.getType().equals("outgoing") && connector.getConnectedConveyorID() == destinationConveyor.getConveyorID()){
-                delayInMilliSeconds += ((connector.getLength()/connector.getSpeed())*1000);
+        for (Connector connector : currentConveyor.getConnectors()) {
+            if (connector.getType().equals("outgoing") && connector.getConnectedConveyorID() == destinationConveyor.getConveyorID()) {
+                delayInMilliSeconds += ((connector.getLength() / connector.getSpeed()) * 1000);
             }
         }
         return delayInMilliSeconds;

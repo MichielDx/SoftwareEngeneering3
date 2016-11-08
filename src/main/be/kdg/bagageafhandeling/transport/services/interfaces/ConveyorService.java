@@ -6,7 +6,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 /**
- * Created by Michiel on 4/11/2016.
+ * A ConveyorService fetches a {@link Conveyor} from a remote host
  */
 public interface ConveyorService {
     @GET("/conveyorservice/{conveyorID}")

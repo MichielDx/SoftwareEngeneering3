@@ -39,18 +39,16 @@ public class BaggageReader {
         baggageRecordList = recordDeserializer.deserializeAll(result);
     }
 
-    public BaggageRecordDTO getNextBagage() throws EndReplayException{
+    public BaggageRecordDTO getNextBagage() throws EndReplayException {
         Baggage baggage = baggageRecordList.get(0);
         Baggage nextBaggage = baggageRecordList.get(1);
         long frequency;
-        if(nextBaggage !=null)
-        frequency = nextBaggage.getTimestamp().getTime()- baggage.getTimestamp().getTime();
-        else{
-            frequency=2000;
+        if (nextBaggage != null)
+            frequency = nextBaggage.getTimestamp().getTime() - baggage.getTimestamp().getTime();
+        else {
+            frequency = 2000;
         }
         baggageRecordList.pop();
-        return new BaggageRecordDTO(baggage,frequency);
+        return new BaggageRecordDTO(baggage, frequency);
     }
-
-
 }

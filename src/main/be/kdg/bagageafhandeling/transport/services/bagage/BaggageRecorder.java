@@ -4,6 +4,7 @@ import main.be.kdg.bagageafhandeling.transport.adapters.out.RecordWriter;
 import main.be.kdg.bagageafhandeling.transport.exceptions.RecordWriterException;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.Baggage;
 import main.be.kdg.bagageafhandeling.transport.models.baggage.BaggageRecordList;
+import main.be.kdg.bagageafhandeling.transport.repository.BaggageRepository;
 import main.be.kdg.bagageafhandeling.transport.services.interfaces.RecorderConversionService;
 import org.apache.log4j.Logger;
 
@@ -14,12 +15,10 @@ public class BaggageRecorder {
     private RecordWriter recorder;
     private RecorderConversionService recordSerializer;
     private BaggageRecordList baggageRecordList;
-    private BaggageRepository baggageRepository;
     private Logger logger = Logger.getLogger(BaggageRecorder.class);
 
     public BaggageRecorder(String recordPath, RecorderConversionService recordSerializer) {
         recorder = new RecordWriter(recordPath);
-        baggageRepository = new BaggageRepository();
         baggageRecordList = new BaggageRecordList();
         initialize();
         this.recordSerializer = recordSerializer;
@@ -28,7 +27,7 @@ public class BaggageRecorder {
 
     private void initialize() {
         try {
-                recorder.initialize();
+            recorder.initialize();
         } catch (RecordWriterException e) {
             logger.error(e.getMessage());
             logger.error(e.getCause().getMessage());
@@ -36,7 +35,7 @@ public class BaggageRecorder {
     }
 
     public void record(Baggage baggage) {
-                baggageRecordList.add(baggage);
+        baggageRecordList.add(baggage);
     }
 
     public void write() {
