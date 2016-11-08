@@ -1,4 +1,4 @@
-package main.be.kdg.bagageafhandeling.transport;
+package main;
 
 import main.be.kdg.bagageafhandeling.transport.adapters.in.ConveyorServiceAPI;
 import main.be.kdg.bagageafhandeling.transport.adapters.in.RabbitMQIn;
