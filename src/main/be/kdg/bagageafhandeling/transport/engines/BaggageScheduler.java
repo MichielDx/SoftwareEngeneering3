@@ -20,15 +20,15 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
- * a Baggagescheduler creates a {@link Baggage} object and publishes this to a message broker periodically.
+ * a Baggagescheduler is thread that creates a {@link Baggage} object and publishes this to a message broker periodically.
  *
- * If this class is started in {@link SimulatorMode} 'Generation' all {@link Baggage}
- * Objects to be published are created with generated ID's.
+ * If this class is started in {@link SimulatorMode} 'Generation'
+ * all {@link Baggage} objects to be published are created with generated ID's.
  * The frequency of creating and publishing objects is determined by a {@link TimePeriod}
  * This class observes {@link DayScheduler} to periodically receive a new {@link TimePeriod}
  *
- * If this class is started in {@link SimulatorMode} 'Replay' all {@link Baggage}.
- * An Object to be published is created by converting it from a {@link BaggageRecordDTO} object from a in-memory cache read in from a file during startup.
+ * If this class is started in {@link SimulatorMode} 'Replay'.
+ * A {@link Baggage} Object to be published is created by converting it from a {@link BaggageRecordDTO} object from a in-memory cache read in from a file during startup.
  * The frequency of publishing objects is determined by the frequency of the current {@link BaggageRecordDTO} object
  */
 
